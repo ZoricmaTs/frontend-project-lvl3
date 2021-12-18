@@ -1,10 +1,11 @@
 {
-  "name": "frontend-project-lvl3",
+  "name": "@hexlet/code",
   "version": "1.0.0",
   "description": "[![Actions Status](https://github.com/ZoricmaTs/frontend-project-lvl3/workflows/hexlet-check/badge.svg)](https://github.com/ZoricmaTs/frontend-project-lvl3/actions)",
   "private": true,
   "scripts": {
-    "test": "jest --colors"
+    "test": "npx -n --experimental-vm-modules jest",
+    "test:watch": "npx -n --experimental-vm-modules jest --coverage --watch"
   },
   "repository": {
     "type": "git",
