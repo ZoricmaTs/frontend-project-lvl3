@@ -2,7 +2,7 @@ dev:
 	npx webpack serve
 
 install:
-	npm ci
+	npm install
 
 build:
 	rm -rf dist
@@ -17,4 +17,5 @@ test-coverage:
 lint:
 	npx eslint .
 
-.PHONY: test
+publish:
+	npm publish --dry-run
