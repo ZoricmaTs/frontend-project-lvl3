@@ -1,6 +1,8 @@
 import _ from 'lodash';
 import * as yup from 'yup';
 import onChange from 'on-change';
+import i18n from 'i18next';
+import resources from './locales/index';
 
 const schema = yup.object().shape({
   url: yup.string().required().url(),
@@ -62,7 +64,9 @@ const handleProcessState = (elements, processState) => {
   }
 };
 
-export default () => {
+export default async () => {
+  const defaultLang = 'ru';
+
   const elements = {
     form: document.querySelector('.rss-form '),
     fields: {
@@ -94,6 +98,7 @@ export default () => {
   };
 
   const state = onChange({
+    lng: defaultLang,
     form: {
       valid: true,
       processState: 'filling',
@@ -104,6 +109,13 @@ export default () => {
       },
     },
   }, render(elements));
+
+  const i18nInstance = i18n.createInstance();
+  await i18nInstance.init({
+    lng: defaultLang,
+    debug: false,
+    resources,
+  })
 
   Object.entries(elements.fields).forEach(([fieldName, fieldElement]) => {
     fieldElement.addEventListener('input', (e) => {
@@ -117,6 +129,9 @@ export default () => {
 
   elements.form.addEventListener('submit', (e) => {
     e.preventDefault();
+    const form = e.target;
+    form.reset();
+    form.focus();
 
     state.form.processState = 'sending';
     state.form.processError = null;

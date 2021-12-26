@@ -1,4 +1,5 @@
 import 'bootstrap/dist/css/bootstrap.min.css';
-import validator from './validator';
+import app from './app';
 
-validator();
+app();
+
