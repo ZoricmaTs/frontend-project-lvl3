@@ -1,148 +1,119 @@
 import _ from 'lodash';
 import * as yup from 'yup';
 import onChange from 'on-change';
-import i18n from 'i18next';
+import i18next from 'i18next';
 import resources from './locales/index';
 
-const schema = yup.object().shape({
-  url: yup.string().required().url(),
-});
+const validate = (value, { urls }) => {
+  const schema = yup.object().shape({
+    url: yup.string().required().url().notOneOf(urls),
+  });
 
-const validate = (fields) => {
   try {
-    schema.validateSync(fields, { abortEarly: false });
-    return {};
+    const valid = schema.validateSync(value, { abortEarly: false });
+    console.log(`:->valid`, valid);
+    return valid;
   } catch (e) {
     return _.keyBy(e.inner, 'path');
   }
 };
 
-const renderErrors = (elements, errors, prevErrors) => {
-  Object.entries(elements.fields).forEach(([fieldName, fieldElement]) => {
-    const fieldHadError = _.has(prevErrors, fieldName);
-    const fieldHasError = _.has(errors, fieldName);
+const renderErrors = (elements, errors, prevErrors, i18n) => {
+  const fieldHadError = _.has(prevErrors, 'url');
+  const fieldHasError = _.has(errors, 'url');
 
-    if (!fieldHadError && !fieldHasError) {
-      return;
-    }
-
-    if (fieldHadError && !fieldHasError) {
-      fieldElement.classList.remove('is-invalid');
-      fieldElement.classList.add('is-valid');
-      return;
-    }
-
-    if (fieldHadError && fieldHasError) {
-      return;
-    }
-
-    fieldElement.classList.add('is-invalid');
-    fieldElement.classList.remove('is-valid');
-  });
-};
-
-const handleProcessState = (elements, processState) => {
-  switch (processState) {
-    case 'sent':
-      console.log(`sent:->`);
-      break;
-
-    case 'error':
-      elements.submitButton.disabled = false;
-      break;
-
-    case 'sending':
-      elements.submitButton.disabled = true;
-      break;
-
-    case 'filling':
-      elements.submitButton.disabled = false;
-      break;
-
-    default:
-      throw new Error(`Unknown process state: ${processState}`);
+  if (!fieldHadError && !fieldHasError) {
+    return;
   }
+
+  if (fieldHadError && !fieldHasError) {
+    elements.input.classList.remove('is-invalid');
+    elements.input.classList.add('is-valid');
+
+    // elements.feedback.classList.remove('text-danger');
+    // elements.feedback.classList.add('text-success');
+    //
+    // elements.feedback.textContent = i18n.t('validation.success');
+    return;
+  }
+
+  if (fieldHadError && fieldHasError) {
+    return;
+  }
+
+  elements.input.classList.add('is-invalid');
+  elements.input.classList.remove('is-valid');
+
+  // elements.feedback.classList.remove('text-success');
+  // elements.feedback.classList.add('text-danger');
+  // elements.feedback.textContent = i18n.t('validation.warning');
+
+  // const validInfoText = value ? 'validation.success' : 'validation.warning';
+  // elements.feedback.textContent = i18n.t(validInfoText);
+}
+
+// const initLocale = () => {
+//   const defaultLang = 'ru';
+//   const i18n = i18next.createInstance();
+//
+//   return i18n.init({
+//     lng: defaultLang,
+//     debug: false,
+//     resources,
+//   })
+//     .then(() => app(i18n));
+// }
+
+export const watchForm = (formState) => {
+  const watchedState = onChange(formState, (path, value, prevValue) => {
+    console.log('path:', path);
+    console.log('value:', value);
+    console.log('prevValue:', prevValue);
+  });
+
+  return watchedState;
 };
 
-export default async () => {
-  const defaultLang = 'ru';
-
-  const elements = {
-    form: document.querySelector('.rss-form '),
-    fields: {
-      url: document.getElementById('url-input'),
-    },
-    submitButton: document.querySelector('button[type="submit"]'),
+export const app = async () => {
+  const formState = {
+    urls: [],
+    valid: true,
+    errors: {},
+    processState: 'filling',
+    processError: null,
   };
+  const watchedState = watchForm(formState);
 
-  const render = (elements) => (path, value, prevValue) => {
-    switch (path) {
-      case 'form.processState':
-        handleProcessState(elements, value);
-        break;
+  const input =  document.getElementById('url-input');
+  const submitButton = document.querySelector('button[type="submit"]');
+  const feedback = document.querySelector('.feedback');
 
-      case 'form.processError':
-        break;
-
-      case 'form.valid':
-        elements.submitButton.disabled = !value;
-        break;
-
-      case 'form.errors':
-        renderErrors(elements, value, prevValue);
-        break;
-
-      default:
-        break;
-    }
-  };
-
-  const state = onChange({
-    lng: defaultLang,
-    form: {
-      valid: true,
-      processState: 'filling',
-      processError: null,
-      errors: {},
-      fields: {
-        url: '',
-      },
-    },
-  }, render(elements));
-
-  const i18nInstance = i18n.createInstance();
-  await i18nInstance.init({
-    lng: defaultLang,
-    debug: false,
-    resources,
-  })
-
-  Object.entries(elements.fields).forEach(([fieldName, fieldElement]) => {
-    fieldElement.addEventListener('input', (e) => {
-      const { value } = e.target;
-      state.form.fields[fieldName] = value;
-      const errors = validate(state.form.fields);
-      state.form.errors = errors;
-      state.form.valid = _.isEmpty(errors);
-    });
-  });
-
-  elements.form.addEventListener('submit', (e) => {
+  const form = document.querySelector('.rss-form');
+  form.addEventListener('submit', (e) => {
     e.preventDefault();
-    const form = e.target;
-    form.reset();
-    form.focus();
-
-    state.form.processState = 'sending';
-    state.form.processError = null;
-
-    try {
-      console.log(`:->state.form.processState`);
-      state.form.processState = 'sent';
-    } catch (err) {
-      state.form.processState = 'error';
-      state.form.processError = 'Network Problems. Try again.';
-      throw err;
-    }
+    const formData = new FormData(e.target);
+    const url = formData.get('url');
+    watchedState.urls.push(url);
+    e.target.reset();
+    e.target.focus();
+    const errors = validate(url, formState);
+    watchedState.errors = errors;
+    watchedState.valid = _.isEmpty(errors);
+    watchedState.processState = 'sending';
+    watchedState.processError = null;
   });
+  console.log('state:', formState);
+
+  try {
+    if (watchedState.valid) {
+      watchedState.processState = 'sent';
+    } else {
+      watchedState.processState = 'error';
+    }
+
+  } catch (err) {
+    watchedState.processState = 'error';
+    watchedState.processError = 'Network Problems. Try again.';
+    throw err;
+  }
 };
