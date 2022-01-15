@@ -4,9 +4,10 @@ export default {
       ru: 'Русский',
     },
     validation: {
-      warning: 'Ссылка должна быть валидным URL',
-      success: 'RSS успешно загружен',
+      empty: 'Input field should not to be empty',
+      duplicate: 'RSS уже существует',
+      invalid: 'Ссылка должна быть валидным URL',
+      network: '',
     },
-    placeholder: 'Ссылка RSS'
   },
 };
