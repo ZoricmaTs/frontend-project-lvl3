@@ -9,5 +9,8 @@ export default {
       invalid: 'Ссылка должна быть валидным URL',
       network: '',
     },
+    feeds: {
+      title: 'Фиды'
+    }
   },
 };
