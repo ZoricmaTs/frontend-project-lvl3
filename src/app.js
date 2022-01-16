@@ -1,32 +1,11 @@
-import * as yup from 'yup';
+import _ from 'lodash';
+import validator from './validator';
 import onChange from 'on-change';
+import rssData from './rss-data';
+import rssParser from './rss-parser';
 
-const validate = (value, urls, i18n) => {
-  yup.setLocale({
-    mixed: {
-      notOneOf: i18n.t('validation.duplicate'),
-    },
-    string: {
-      url: i18n.t('validation.invalid'),
-    },
-  });
-
-  const schema = yup.string().required().url().notOneOf(urls);
-
-  try {
-    const valid = schema.validateSync(value, { abortEarly: false });
-    return {
-      url: valid,
-    };
-  } catch (e) {
-    return {
-      error: e.errors,
-    };
-  }
-};
 
 const input = document.getElementById('url-input');
-const submitButton = document.querySelector('button[type="submit"]');
 const feedback = document.querySelector('.feedback');
 
 const watchForm = (formState) => {
@@ -72,26 +51,26 @@ export default async (i18n) => {
     e.preventDefault();
     const formData = new FormData(e.target);
     const url = formData.get('url');
+    const validation = validator(url, state.urls, i18n);
 
-    const validator = validate(url, state.urls, i18n);
-
-    if (validator.error) {
+    if (_.has(validation, 'error')) {
       watchedState.form.status = 'invalid';
-      watchedState.form.errorType = validator.error;
+      watchedState.form.errorType = validation.error;
     } else {
-      watchedState.urls.push(url);
-      watchedState.form.status = 'valid';
-      watchedState.form.errorType = null;
+      rssData(validation.url)
+        .then(({data}) => {
+          const { title, description, link, webMaster, posts } = rssParser(data.contents);
+
+          watchedState.urls.push(url);
+          watchedState.form.status = 'valid';
+          watchedState.form.errorType = null;
+        })
+        .catch((err) => {
+
+        });
     }
 
     e.target.reset();
     e.target.focus();
   });
-
-  try {
-
-  } catch (err) {
-
-    throw err;
-  }
 };
