@@ -32,7 +32,7 @@ const watchForm = (state, i18n) => {
 
 const renderFeeds = (feeds, i18n) => {
   const parentDiv = document.querySelector('.feeds');
-  parentDiv.innerHTML = `<h2>${i18n.t('feeds.title')}</h2>`;
+  parentDiv.innerHTML = `<h2 class="card-title h4">${i18n.t('feeds.title')}</h2>`;
   const ulEl = document.createElement('ul');
   ulEl.classList.add('list-group', 'mb-5');
   parentDiv.append(ulEl);
@@ -44,7 +44,7 @@ const renderFeeds = (feeds, i18n) => {
     ulEl.prepend(li);
   };
 
-  feeds.forEach(renderFeed(feeds));
+  feeds.forEach(renderFeed);
 }
 const watchFeeds = (state, i18n) => {
   const watchedState = onChange(state, (path, value) => {
@@ -54,8 +54,41 @@ const watchFeeds = (state, i18n) => {
   return watchedState;
 };
 
-const renderPosts = (value, prevValue, i18n) => {
+const renderPost = ({ title, link, id, visited }, parentNode, i18n) => {
+  const liEl = document.createElement('li');
+  liEl.classList.add('list-group-item', 'd-flex', 'justify-content-between', 'align-items-start', 'border-end-0');
+  const aEl = document.createElement('a');
+  aEl.setAttribute('href', link);
+  aEl.setAttribute('target', '_blank');
+  aEl.setAttribute('data-id', id);
+  aEl.setAttribute('rel', 'noopener');
+  aEl.setAttribute('rel', 'noreferrer');
+  const linkStyle = visited ? 'fw-normal' : 'fw-bold';
+  aEl.classList.add(`${linkStyle}`, 'link-secondary');
 
+  aEl.textContent = title;
+  liEl.append(aEl);
+  const btnEl = document.createElement('button');
+  btnEl.setAttribute('type', 'button');
+  btnEl.setAttribute('data-id', id);
+  btnEl.setAttribute('data-bs-toggle', 'modal');
+  btnEl.setAttribute('data-bs-target', '#modal');
+  btnEl.classList.add('btn', 'btn-outline-primary', 'btn-sm');
+  btnEl.textContent = i18n.t('posts.button');
+  liEl.append(btnEl);
+  parentNode.prepend(liEl);
+}
+
+const renderPosts = (value, prevValue, i18n) => {
+  const parentDiv = document.querySelector('.posts');
+  parentDiv.innerHTML = `<h2 class="card-title h4">${i18n.t('posts.title')}</h2>`;
+  const ulEl = document.createElement('ul');
+  ulEl.classList.add('list-group', 'border-0', 'rounded-0');
+  parentDiv.append(ulEl);
+
+  value.forEach((posts) => {
+    posts.forEach((post) => renderPost(post, ulEl, i18n));
+  });
 }
 
 const watchPosts = (state, i18n) => {
@@ -79,7 +112,7 @@ export default async (i18n) => {
 
   const watchedForm = watchForm(state.form, i18n);
   const watchedFeeds = watchFeeds(state.feeds, i18n);
-  const watchedPost = watchPosts(state.posts, i18n);
+  const watchedPosts = watchPosts(state.posts, i18n);
 
   const form = document.querySelector('.rss-form');
   form.addEventListener('submit', (e) => {
@@ -95,18 +128,10 @@ export default async (i18n) => {
       rssData(validation.url)
         .then(({data}) => {
           const { title, description, posts } = rssParser(data.contents);
-
-          const postsWithId = posts
-            .map((post) => ({
-              id: _.uniqueId(),
-              ...post,
-            }));
-
           state.urls.push(url);
 
           watchedFeeds.push({title, description});
-          watchedPost.push(posts);
-          console.log(`:->watchedFeeds`, watchedFeeds);
+          watchedPosts.push(posts);
           watchedForm.status = 'valid';
           watchedForm.errorType = null;
         })

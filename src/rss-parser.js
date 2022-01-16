@@ -1,3 +1,5 @@
+import _ from "lodash";
+
 export default (data) => {
   const parser = new DOMParser();
   const channel = parser.parseFromString(data, 'text/xml');
@@ -20,11 +22,9 @@ export default (data) => {
     const pubDateEl = channel.querySelector('pubDate');
 
     return {
+      id: _.uniqueId(),
       title: titleEl.textContent,
-      guid: guidEl.textContent,
       link: linkEl.textContent,
-      description: descriptionEl.textContent,
-      pubDate: pubDateEl.textContent
     }
   });
 

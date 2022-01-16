@@ -11,6 +11,10 @@ export default {
     },
     feeds: {
       title: 'Фиды'
+    },
+    posts: {
+      title: 'Посты',
+      button: 'Посмотреть',
     }
   },
 };
