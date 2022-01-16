@@ -7,9 +7,7 @@ const allOrigins = (url) => {
   return result.toString();
 };
 
-export default (url) => {
-  return axios.get(allOrigins(url))
-    .catch(() => {
-      throw new Error('network error');
-    });
-}
+export default (url) => axios.get(allOrigins(url))
+  .catch(() => {
+    throw new Error('network error');
+  });

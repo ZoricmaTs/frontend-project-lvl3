@@ -1,4 +1,4 @@
-import _ from "lodash";
+import _ from 'lodash';
 
 export default (data) => {
   const parser = new DOMParser();
@@ -10,24 +10,18 @@ export default (data) => {
   const description = descriptionEl.textContent;
   const linkEl = channel.querySelector('link');
   const link = linkEl.textContent;
-  const webMasterEl = channel.querySelector('webMaster');
-  const webMaster = webMasterEl.textContent;
 
   const itemsEls = channel.querySelectorAll('item');
   const posts = [...itemsEls].map((post) => {
     const titleEl = post.querySelector('title');
-    const guidEl = channel.querySelector('guid');
     const linkEl = channel.querySelector('link');
-    const descriptionEl = channel.querySelector('description');
-    const pubDateEl = channel.querySelector('pubDate');
 
     return {
       id: _.uniqueId(),
       title: titleEl.textContent,
       link: linkEl.textContent,
-    }
+    };
   });
 
-
-  return { title, description, link, webMaster, posts };
+  return { title, description, link, posts };
 };
