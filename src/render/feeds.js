@@ -13,4 +13,4 @@ export default (feeds, i18n) => {
   };
 
   feeds.forEach(renderFeed);
-}
+};

@@ -3,7 +3,7 @@ import onChange from 'on-change';
 const input = document.getElementById('url-input');
 const feedback = document.querySelector('.feedback');
 
-export default (state, i18n) => {
+export default (state) => {
   const watchedState = onChange(state, (path, value) => {
     switch (path) {
       case 'status':
@@ -11,10 +11,9 @@ export default (state, i18n) => {
         break;
 
       case 'errorType':
-        const valid = value === null;
-        feedback.textContent = valid ? '' : value;
-        feedback.classList.toggle('text-success', valid);
-        feedback.classList.toggle('text-danger', !valid);
+        feedback.textContent = value === null ? '' : value;
+        feedback.classList.toggle('text-success', value === null);
+        feedback.classList.toggle('text-danger', !(value === null));
         break;
 
       default:

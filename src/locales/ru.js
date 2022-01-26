@@ -7,14 +7,14 @@ export default {
       empty: 'Input field should not to be empty',
       duplicate: 'RSS уже существует',
       invalid: 'Ссылка должна быть валидным URL',
-      network: '',
+      network: 'network error',
     },
     feeds: {
-      title: 'Фиды'
+      title: 'Фиды',
     },
     posts: {
       title: 'Посты',
       button: 'Посмотреть',
-    }
+    },
   },
 };

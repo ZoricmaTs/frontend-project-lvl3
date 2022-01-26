@@ -17,9 +17,23 @@ export default async (i18n) => {
     },
   };
 
-  const watchedForm = watchForm(state.form, i18n);
+  const watchedForm = watchForm(state.form);
   const watchedFeeds = watchFeeds(state.feeds, i18n);
   const watchedPosts = watchPosts(state.posts, i18n);
+
+  const updatePosts = (url) => {
+    rssData(url)
+      .then(({ data }) => {
+        const { posts } = rssParser(data.contents);
+        return posts;
+      })
+      .then((posts) => {
+        const oldPosts = state.posts;
+        const newPosts = _.differenceBy(posts, oldPosts, 'title');
+        watchedPosts.push(...newPosts);
+      })
+      .finally(() => setTimeout(() => updatePosts(url), 5000));
+  };
 
   const form = document.querySelector('.rss-form');
   form.addEventListener('submit', (e) => {
@@ -46,6 +60,8 @@ export default async (i18n) => {
           watchedForm.errorType = err.message;
         });
     }
+
+    setTimeout(() => state.urls.forEach((item) => updatePosts(item)), 5000);
 
     e.target.reset();
     e.target.focus();
