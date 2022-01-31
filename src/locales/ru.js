@@ -4,10 +4,10 @@ export default {
       ru: 'Русский',
     },
     validation: {
-      empty: 'Input field should not to be empty',
+      empty: 'Поле ввода не должно быть пустым',
       duplicate: 'RSS уже существует',
       invalid: 'Ссылка должна быть валидным URL',
-      network: 'network error',
+      network: 'Cетевая ошибка',
     },
     feeds: {
       title: 'Фиды',
