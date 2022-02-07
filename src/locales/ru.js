@@ -16,5 +16,9 @@ export default {
       title: 'Посты',
       button: 'Посмотреть',
     },
+    modal: {
+      link: 'Читать полностью',
+      close: 'Закрыть',
+    },
   },
 };
