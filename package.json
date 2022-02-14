@@ -2,7 +2,6 @@
   "name": "@hexlet/code",
   "version": "1.0.0",
   "description": "[![Actions Status](https://github.com/ZoricmaTs/frontend-project-lvl3/workflows/hexlet-check/badge.svg)](https://github.com/ZoricmaTs/frontend-project-lvl3/actions)",
-  "private": true,
   "scripts": {
     "test": "npx -n --experimental-vm-modules jest",
     "test:watch": "npx -n --experimental-vm-modules jest --coverage --watch"
@@ -29,6 +28,9 @@
     "@babel/plugin-proposal-class-properties": "^7.16.5",
     "@babel/plugin-transform-runtime": "^7.16.5",
     "@babel/preset-env": "^7.16.5",
+    "@testing-library/dom": "^8.11.3",
+    "@testing-library/jest-dom": "^5.16.2",
+    "@testing-library/user-event": "^13.5.0",
     "babel-core": "^6.26.3",
     "babel-jest": "^27.4.5",
     "babel-loader": "^8.2.3",
@@ -62,6 +64,7 @@
     "jquery": "^3.6.0",
     "lodash": "^4.17.21",
     "mini-css-extract-plugin": "^2.4.5",
+    "msw": "^0.36.8",
     "npm-check-updates": "^12.0.5",
     "on-change": "^4.0.0",
     "optimize-css-assets-webpack-plugin": "^6.0.1",

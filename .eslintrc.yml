@@ -4,6 +4,8 @@ plugins:
   # https://github.com/jest-community/eslint-plugin-jest
   - jest
   - babel
+  - testing-library
+  - jest-dom
 
 # https://eslint.org/docs/user-guide/configuring#specifying-environments
 env:
@@ -17,6 +19,8 @@ parser: '@babel/eslint-parser'
 extends:
   - 'airbnb-base'
   - 'plugin:jest/recommended'
+  - 'plugin:testing-library/react'
+  - 'plugin:jest-dom/recommended'
 
 parserOptions:
   ecmaVersion: 2020
@@ -26,3 +30,5 @@ rules:
   no-console: 0
   import/extensions: 0
   no-underscore-dangle: [2, { "allow": ["__filename", "__dirname"] }] # разрешает подчёркивание в именах только для двух констант
+  import/no-unresolved: 0
+  no-param-reassign: 0
