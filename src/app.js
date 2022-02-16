@@ -3,7 +3,6 @@ import validator from './validator';
 import rssData from './rss-data';
 import rssParser from './rss-parser';
 import watchStates from './watch-states';
-import 'bootstrap/dist/css/bootstrap.min.css';
 import 'bootstrap';
 import renderModal from './render/modal';
 import i18next from 'i18next';
@@ -13,7 +12,7 @@ export default async () => {
   const defaultLang = 'ru';
   const i18n = i18next.createInstance();
 
-  i18n.init({
+  await i18n.init({
     lng: defaultLang,
     debug: false,
     resources,

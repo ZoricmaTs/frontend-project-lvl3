@@ -3,8 +3,8 @@
   "version": "1.0.0",
   "description": "[![Actions Status](https://github.com/ZoricmaTs/frontend-project-lvl3/workflows/hexlet-check/badge.svg)](https://github.com/ZoricmaTs/frontend-project-lvl3/actions)",
   "scripts": {
-    "test": "npx -n --experimental-vm-modules jest",
-    "test:watch": "npx -n --experimental-vm-modules jest --coverage --watch"
+    "test": "npx -n --experimental-vm-modules --no-warnings jest --colors",
+    "test:watch": "npx -n --experimental-vm-modules jest --watch"
   },
   "repository": {
     "type": "git",
@@ -49,6 +49,7 @@
     "jest-cli": "^27.4.5",
     "postcss-loader": "^6.2.1",
     "postcss-preset-env": "^7.0.2",
+    "read-package-json-fast": "^2.0.3",
     "style-loader": "^3.3.1",
     "url-loader": "^4.1.1",
     "webpack": "^5.65.0",
