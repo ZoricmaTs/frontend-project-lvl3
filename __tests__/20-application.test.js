@@ -29,7 +29,8 @@ const htmlUrl = 'https://ru.hexlet.io';
 const corsProxy = 'https://hexlet-allorigins.herokuapp.com';
 const corsProxyApi = `${corsProxy}/get`;
 
-const index = path.join(__dirname, '..', 'code', 'index.html');
+const index = path.join(__dirname, '..', 'index.html');
+
 const initHtml = fs.readFileSync(index, 'utf-8');
 
 const getResponseHandler = (url, data) => rest.get(corsProxyApi, (req, res, ctx) => {
