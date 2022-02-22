@@ -3,6 +3,8 @@ import renderFeeds from './render/feeds';
 import { renderPostLink, renderPosts } from './render/posts';
 
 export default (state, i18n) => {
+  const input = document.getElementById('url-input');
+
   const watchedState = onChange(state, (path, value, prevValue) => {
     switch (path) {
       case 'form.status':
@@ -10,9 +12,7 @@ export default (state, i18n) => {
         break;
 
       case 'form.errorType':
-        const input = document.getElementById('url-input');
         const feedback = document.querySelector('.feedback');
-
         feedback.textContent = value === null ? '' : value;
         feedback.classList.toggle('text-success', value === null);
         feedback.classList.toggle('text-danger', !(value === null));
