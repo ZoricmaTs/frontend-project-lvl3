@@ -79,8 +79,10 @@ export default async (i18n) => {
     const validation = validator(url, state.urls, i18n);
 
     if (_.has(validation, 'error')) {
-      watchedStates.form.status = 'invalid';
-      watchedStates.form.errorType = validation.error;
+      watchedStates.form = {
+        status: 'invalid',
+        errorType: validation.error,
+      }
     } else {
       rssData(validation.url)
         .then(({ data }) => {
@@ -95,13 +97,18 @@ export default async (i18n) => {
           }));
 
           watchedStates.posts.push(...postWithId);
-          watchedStates.form.status = 'valid';
-          watchedStates.form.errorType = null;
+          watchedStates.form = {
+            status: 'valid',
+            errorType: null,
+          }
 
           handlePost();
         })
         .catch((err) => {
-          watchedStates.form.errorType = err.message;
+          watchedStates.form = {
+            status: 'invalid',
+            errorType: err.message,
+          }
         });
     }
 
