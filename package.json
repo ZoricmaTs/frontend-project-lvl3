@@ -13,7 +13,8 @@
   "jest": {
     "testEnvironment": "jsdom",
     "transformIgnorePatterns": [
-      "node_modules/(?!(on-change)/)"
+      "node_modules/(?!(on-change)/)",
+      "node_modules/(?!(lodash)/)"
     ]
   },
   "keywords": [],
