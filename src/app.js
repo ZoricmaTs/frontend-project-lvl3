@@ -5,8 +5,19 @@ import rssParser from './rss-parser';
 import watchStates from './watch-states';
 import 'bootstrap';
 import renderModal from './render/modal';
+import i18next from 'i18next';
+import resources from './locales';
 
-export default async (i18n) => {
+export default async () => {
+  const defaultLang = 'ru';
+  const i18n = i18next.createInstance();
+
+  await i18n.init({
+    lng: defaultLang,
+    debug: false,
+    resources,
+  });
+
   const state = {
     urls: [],
     feeds: [],

@@ -19,8 +19,8 @@ const readFixture = (filename) => {
   return rss;
 };
 const rss1 = readFixture('rss1.xml');
-// const rss2 = readFixture('rss2.xml');
-// const rss3 = readFixture('rss3.xml');
+const rss2 = readFixture('rss2.xml');
+const rss3 = readFixture('rss3.xml');
 const rssUrl = 'https://ru.hexlet.io/lessons.rss';
 
 const html = readFixture('document.html');
