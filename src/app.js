@@ -1,12 +1,12 @@
 import _ from 'lodash';
+import i18next from 'i18next';
+import resources from './locales';
+import 'bootstrap';
 import validator from './validator';
 import rssData from './rss-data';
 import rssParser from './rss-parser';
 import watchStates from './watch-states';
-import 'bootstrap';
 import renderModal from './render/modal';
-import i18next from 'i18next';
-import resources from './locales';
 
 export default async () => {
   const defaultLang = 'ru';
@@ -26,10 +26,6 @@ export default async () => {
       status: 'empty',
       errorType: null,
     },
-    uiState: {
-      visitedPostsIds: [],
-      activePostId: null,
-    },
   };
 
   const watchedStates = watchStates(state, i18n);
@@ -42,11 +38,12 @@ export default async () => {
       })
       .then((posts) => {
         const oldPosts = state.posts;
-        const newPosts = _.differenceBy(posts, oldPosts, 'title');
+        const newPosts = _.differenceBy(posts, oldPosts, 'id');
 
         const newPostsWithId = newPosts.map((post) => ({
           id: _.uniqueId(),
           ...post,
+          visited: false,
         }));
 
         if (newPostsWithId.length > 0) {
@@ -62,26 +59,33 @@ export default async () => {
     posts.forEach((post) => {
       const button = post.querySelector('button');
       const link = post.querySelector('a');
+      const postsState = [...state.posts];
 
       button.addEventListener('click', (e) => {
         const currentPostId = e.target.dataset.id;
-        const currentPost = watchedStates.posts.find((item) => item.id === currentPostId);
-
-        watchedStates.uiState.activePostId = currentPostId;
-        watchedStates.uiState.visitedPostsIds.push(currentPostId);
+        const currentPost = state.posts.find((item) => item.id === currentPostId);
+        const postState = { ...postsState[currentPostId - 1] };
+        postState.visited = true;
+        postsState[currentPostId - 1] = postState;
+        state.posts = postsState;
 
         renderModal(currentPost, i18n);
       });
 
       link.addEventListener('click', (e) => {
         const currentPostId = e.target.dataset.id;
-        watchedStates.uiState.activePostId = currentPostId;
-        watchedStates.uiState.visitedPostsIds.push(currentPostId);
+        const postState = { ...postsState[currentPostId - 1] };
+        postState.visited = true;
+        postsState[currentPostId - 1] = postState;
+        state.posts = postsState;
       });
     });
   };
 
   const form = document.querySelector('.rss-form');
+  const urlContainer = document.getElementById('url-input');
+  const button = document.querySelector('[type="submit"]');
+
   form.addEventListener('submit', (e) => {
     e.preventDefault();
 
@@ -93,9 +97,9 @@ export default async () => {
       watchedStates.form = {
         status: 'invalid',
         errorType: validation.error,
-      }
+      };
     } else {
-      rssData(validation.url)
+      rssData(validation.url, i18n)
         .then(({ data }) => {
           const { title, description, posts } = rssParser(data.contents);
 
@@ -105,21 +109,30 @@ export default async () => {
           const postWithId = posts.map((post) => ({
             id: _.uniqueId(),
             ...post,
+            visited: false,
           }));
 
           watchedStates.posts.push(...postWithId);
+
           watchedStates.form = {
             status: 'valid',
             errorType: null,
-          }
+          };
 
           handlePost();
+        })
+        .then(() => {
+          urlContainer.removeAttribute('readonly');
+          button.removeAttribute('disabled');
         })
         .catch((err) => {
           watchedStates.form = {
             status: 'invalid',
             errorType: err.message,
-          }
+          };
+
+          urlContainer.removeAttribute('readonly');
+          button.removeAttribute('disabled');
         });
     }
 

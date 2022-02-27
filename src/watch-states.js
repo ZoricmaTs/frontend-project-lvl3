@@ -1,6 +1,6 @@
 import onChange from 'on-change';
 import renderFeeds from './render/feeds';
-import { renderPostLink, renderPosts } from './render/posts';
+import renderPosts from './render/posts';
 
 export default (state, i18n) => {
   const input = document.getElementById('url-input');
@@ -33,9 +33,6 @@ export default (state, i18n) => {
         renderPosts(value, prevValue, i18n);
         break;
 
-      case 'uiState.activePostId':
-        renderPostLink(value, prevValue);
-        break;
       default:
         break;
     }

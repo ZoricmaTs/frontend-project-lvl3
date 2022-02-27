@@ -84,27 +84,27 @@ test('adding', async () => {
   expect(await screen.findByText(/RSS успешно загружен/i)).toBeInTheDocument();
 });
 
-// test('validation (unique)', async () => {
-//   const handler = getResponseHandler(rssUrl, rss1);
-//   server.use(handler);
-//
-//   userEvent.type(screen.getByRole('textbox', { name: 'url' }), rssUrl);
-//   userEvent.click(screen.getByRole('button', { name: 'add' }));
-//
-//   expect(await screen.findByText(/RSS успешно загружен/i)).toBeInTheDocument();
-//
-//   userEvent.type(screen.getByRole('textbox', { name: 'url' }), rssUrl);
-//   userEvent.click(screen.getByRole('button', { name: 'add' }));
-//
-//   expect(await screen.findByText(/RSS уже существует/i)).toBeInTheDocument();
-// });
-//
-// test('validation (valid url)', async () => {
-//   userEvent.type(screen.getByRole('textbox', { name: 'url' }), 'wrong');
-//   userEvent.click(screen.getByRole('button', { name: 'add' }));
-//   expect(await screen.findByText(/Ссылка должна быть валидным URL/i)).toBeInTheDocument();
-// });
-//
+test('validation (unique)', async () => {
+  const handler = getResponseHandler(rssUrl, rss1);
+  server.use(handler);
+
+  userEvent.type(screen.getByRole('textbox', { name: 'url' }), rssUrl);
+  userEvent.click(screen.getByRole('button', { name: 'add' }));
+
+  expect(await screen.findByText(/RSS успешно загружен/i)).toBeInTheDocument();
+
+  userEvent.type(screen.getByRole('textbox', { name: 'url' }), rssUrl);
+  userEvent.click(screen.getByRole('button', { name: 'add' }));
+
+  expect(await screen.findByText(/RSS уже существует/i)).toBeInTheDocument();
+});
+
+test('validation (valid url)', async () => {
+  userEvent.type(screen.getByRole('textbox', { name: 'url' }), 'wrong');
+  userEvent.click(screen.getByRole('button', { name: 'add' }));
+  expect(await screen.findByText(/Ссылка должна быть валидным URL/i)).toBeInTheDocument();
+});
+
 // test('handling non-rss url', async () => {
 //   const handler = getResponseHandler(htmlUrl, html);
 //   server.use(handler);
@@ -114,7 +114,7 @@ test('adding', async () => {
 //
 //   expect(await screen.findByText(/Ресурс не содержит валидный RSS/i)).toBeInTheDocument();
 // });
-//
+
 // test('handling network error', async () => {
 //   server.use(
 //     rest.get(corsProxyApi, (_req, res) => res.networkError('no internet')),
@@ -126,78 +126,78 @@ test('adding', async () => {
 //   expect(await screen.findByText(/Ошибка сети/i)).toBeInTheDocument();
 // });
 
-// describe('handle disabling ui elements during loading', () => {
-//   test('handle successful loading', async () => {
-//     const handler = getResponseHandler(rssUrl, rss1);
-//     server.use(handler);
-//
-//     expect(screen.getByRole('textbox', { name: 'url' })).not.toHaveAttribute('readonly');
-//     expect(screen.getByRole('button', { name: 'add' })).toBeEnabled();
-//
-//     userEvent.type(screen.getByRole('textbox', { name: 'url' }), rssUrl);
-//     userEvent.click(screen.getByRole('button', { name: 'add' }));
-//
-//     await waitFor(() => {
-//       expect(screen.getByRole('textbox', { name: 'url' })).toHaveAttribute('readonly');
-//     });
-//     expect(screen.getByRole('button', { name: 'add' })).toBeDisabled();
-//
-//     await waitFor(() => {
-//       expect(screen.getByRole('textbox', { name: 'url' })).not.toHaveAttribute('readonly');
-//     });
-//     expect(screen.getByRole('button', { name: 'add' })).toBeEnabled();
-//   });
-//
-//   test('handle failed loading', async () => {
-//     const handler = getResponseHandler(htmlUrl, html);
-//     server.use(handler);
-//
-//     expect(screen.getByRole('textbox', { name: 'url' })).not.toHaveAttribute('readonly');
-//     expect(screen.getByRole('button', { name: 'add' })).toBeEnabled();
-//
-//     userEvent.type(screen.getByRole('textbox', { name: 'url' }), htmlUrl);
-//     userEvent.click(screen.getByRole('button', { name: 'add' }));
-//
-//     await waitFor(() => {
-//       expect(screen.getByRole('textbox', { name: 'url' })).toHaveAttribute('readonly');
-//     });
-//     expect(screen.getByRole('button', { name: 'add' })).toBeDisabled();
-//
-//     await waitFor(() => {
-//       expect(screen.getByRole('textbox', { name: 'url' })).not.toHaveAttribute('readonly');
-//     });
-//     expect(screen.getByRole('button', { name: 'add' })).toBeEnabled();
-//   });
-// });
-//
-// describe('load feeds', () => {
-//   test('render feed and posts', async () => {
-//     const handler = getResponseHandler(rssUrl, rss1);
-//     server.use(handler);
-//
-//     userEvent.type(screen.getByRole('textbox', { name: 'url' }), rssUrl);
-//     userEvent.click(screen.getByRole('button', { name: 'add' }));
-//
-//     expect(await screen.findByText(/Новые уроки на Хекслете/i)).toBeInTheDocument();
-//     expect(await screen.findByText(/Практические уроки по программированию/i)).toBeInTheDocument();
-//     expect(await screen.findByRole('link', { name: /Агрегация \/ Python: Деревья/i })).toBeInTheDocument();
-//     expect(await screen.findByRole('link', { name: /Traversal \/ Python: Деревья/i })).toBeInTheDocument();
-//   });
-// });
-//
-// test('modal', async () => {
-//   const handler = getResponseHandler(rssUrl, rss1);
-//   server.use(handler);
-//
-//   userEvent.type(screen.getByRole('textbox', { name: 'url' }), rssUrl);
-//   userEvent.click(screen.getByRole('button', { name: 'add' }));
-//
-//   const previewBtns = await screen.findAllByRole('button', { name: /Просмотр/i });
-//   expect(screen.getByRole('link', { name: /Агрегация \/ Python: Деревья/i })).toHaveClass('fw-bold');
-//   userEvent.click(previewBtns[0]);
-//   const modalBody = await screen.findByText('Цель: Научиться извлекать из дерева необходимые данные');
-//   await waitFor(() => {
-//     expect(modalBody).toBeVisible();
-//   });
-//   expect(screen.getByRole('link', { name: /Агрегация \/ Python: Деревья/i })).not.toHaveClass('fw-bold');
-// });
+describe('handle disabling ui elements during loading', () => {
+  test('handle successful loading', async () => {
+    const handler = getResponseHandler(rssUrl, rss1);
+    server.use(handler);
+
+    expect(screen.getByRole('textbox', { name: 'url' })).not.toHaveAttribute('readonly');
+    expect(screen.getByRole('button', { name: 'add' })).toBeEnabled();
+
+    userEvent.type(screen.getByRole('textbox', { name: 'url' }), rssUrl);
+    userEvent.click(screen.getByRole('button', { name: 'add' }));
+
+    await waitFor(() => {
+      expect(screen.getByRole('textbox', { name: 'url' })).toHaveAttribute('readonly');
+    });
+    expect(screen.getByRole('button', { name: 'add' })).toBeDisabled();
+
+    await waitFor(() => {
+      expect(screen.getByRole('textbox', { name: 'url' })).not.toHaveAttribute('readonly');
+    });
+    expect(screen.getByRole('button', { name: 'add' })).toBeEnabled();
+  });
+
+  test('handle failed loading', async () => {
+    const handler = getResponseHandler(htmlUrl, html);
+    server.use(handler);
+
+    expect(screen.getByRole('textbox', { name: 'url' })).not.toHaveAttribute('readonly');
+    expect(screen.getByRole('button', { name: 'add' })).toBeEnabled();
+
+    userEvent.type(screen.getByRole('textbox', { name: 'url' }), htmlUrl);
+    userEvent.click(screen.getByRole('button', { name: 'add' }));
+
+    await waitFor(() => {
+      expect(screen.getByRole('textbox', { name: 'url' })).toHaveAttribute('readonly');
+    });
+    expect(screen.getByRole('button', { name: 'add' })).toBeDisabled();
+
+    await waitFor(() => {
+      expect(screen.getByRole('textbox', { name: 'url' })).not.toHaveAttribute('readonly');
+    });
+    expect(screen.getByRole('button', { name: 'add' })).toBeEnabled();
+  });
+});
+
+describe('load feeds', () => {
+  test('render feed and posts', async () => {
+    const handler = getResponseHandler(rssUrl, rss1);
+    server.use(handler);
+
+    userEvent.type(screen.getByRole('textbox', { name: 'url' }), rssUrl);
+    userEvent.click(screen.getByRole('button', { name: 'add' }));
+
+    expect(await screen.findByText(/Новые уроки на Хекслете/i)).toBeInTheDocument();
+    expect(await screen.findByText(/Практические уроки по программированию/i)).toBeInTheDocument();
+    expect(await screen.findByRole('link', { name: /Агрегация \/ Python: Деревья/i })).toBeInTheDocument();
+    expect(await screen.findByRole('link', { name: /Traversal \/ Python: Деревья/i })).toBeInTheDocument();
+  });
+});
+
+test('modal', async () => {
+  const handler = getResponseHandler(rssUrl, rss1);
+  server.use(handler);
+
+  userEvent.type(screen.getByRole('textbox', { name: 'url' }), rssUrl);
+  userEvent.click(screen.getByRole('button', { name: 'add' }));
+
+  const previewBtns = await screen.findAllByRole('button', { name: /Просмотр/i });
+  expect(screen.getByRole('link', { name: /Агрегация \/ Python: Деревья/i })).toHaveClass('fw-bold');
+  userEvent.click(previewBtns[0]);
+  const modalBody = await screen.findByText('Цель: Научиться извлекать из дерева необходимые данные');
+  await waitFor(() => {
+    expect(modalBody).toBeVisible();
+  });
+  expect(screen.getByRole('link', { name: /Агрегация \/ Python: Деревья/i })).not.toHaveClass('fw-bold');
+});

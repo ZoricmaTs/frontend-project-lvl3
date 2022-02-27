@@ -13,7 +13,7 @@ export default (data) => {
   const posts = [...itemsEls].map((post) => {
     const titlePostEl = post.querySelector('title');
     const linkPostEl = channel.querySelector('link');
-    const descriptionPostEl = channel.querySelector('description');
+    const descriptionPostEl = channel.querySelector('item > description');
 
     return {
       title: titlePostEl.textContent,
