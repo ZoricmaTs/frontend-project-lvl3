@@ -105,26 +105,26 @@ test('validation (valid url)', async () => {
   expect(await screen.findByText(/Ссылка должна быть валидным URL/i)).toBeInTheDocument();
 });
 
-// test('handling non-rss url', async () => {
-//   const handler = getResponseHandler(htmlUrl, html);
-//   server.use(handler);
-//
-//   userEvent.type(screen.getByRole('textbox', { name: 'url' }), htmlUrl);
-//   userEvent.click(screen.getByRole('button', { name: 'add' }));
-//
-//   expect(await screen.findByText(/Ресурс не содержит валидный RSS/i)).toBeInTheDocument();
-// });
+test('handling non-rss url', async () => {
+  const handler = getResponseHandler(htmlUrl, html);
+  server.use(handler);
 
-// test('handling network error', async () => {
-//   server.use(
-//     rest.get(corsProxyApi, (_req, res) => res.networkError('no internet')),
-//   );
-//
-//   userEvent.type(screen.getByRole('textbox', { name: 'url' }), rssUrl);
-//   userEvent.click(screen.getByRole('button', { name: 'add' }));
-//
-//   expect(await screen.findByText(/Ошибка сети/i)).toBeInTheDocument();
-// });
+  userEvent.type(screen.getByRole('textbox', { name: 'url' }), htmlUrl);
+  userEvent.click(screen.getByRole('button', { name: 'add' }));
+
+  expect(await screen.findByText(/Ресурс не содержит валидный RSS/i)).toBeInTheDocument();
+});
+
+test('handling network error', async () => {
+  server.use(
+    rest.get(corsProxyApi, (_req, res) => res.networkError('no internet')),
+  );
+
+  userEvent.type(screen.getByRole('textbox', { name: 'url' }), rssUrl);
+  userEvent.click(screen.getByRole('button', { name: 'add' }));
+
+  expect(await screen.findByText(/Ошибка сети/i)).toBeInTheDocument();
+});
 
 describe('handle disabling ui elements during loading', () => {
   test('handle successful loading', async () => {

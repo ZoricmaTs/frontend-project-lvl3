@@ -1,4 +1,4 @@
-const renderPost = (post, parentNode, i18n) => {
+const renderPost = (post, visitedIds, parentNode, i18n) => {
   const btnEl = document.createElement('button');
   btnEl.setAttribute('data-id', `${post.id}`);
   btnEl.setAttribute('data-bs-toggle', 'modal');
@@ -16,7 +16,9 @@ const renderPost = (post, parentNode, i18n) => {
   aEl.setAttribute('rel', 'noopener noreferrer');
   aEl.textContent = post.title;
 
-  if (post.visited) {
+  const isVisited = visitedIds.includes(post.id);
+
+  if (isVisited) {
     aEl.classList.remove('fw-bold');
     aEl.classList.add('fw-normal', 'link-secondary');
   } else {
@@ -29,16 +31,12 @@ const renderPost = (post, parentNode, i18n) => {
   parentNode.append(liEl);
 };
 
-export default (value, prevValue, i18n) => {
+export default (state, i18n) => {
   const parentDiv = document.querySelector('.posts');
   parentDiv.innerHTML = `<h2 class="card-title h4">${i18n.t('posts.title')}</h2>`;
   const ulEl = document.createElement('ul');
   ulEl.classList.add('list-group', 'border-0', 'rounded-0');
   parentDiv.append(ulEl);
 
-  if (value instanceof Array) {
-    value.forEach((post) => renderPost(post, ulEl, i18n));
-  } else {
-    renderPost(value, ulEl, i18n);
-  }
+  state.posts.forEach((post) => renderPost(post, state.visitedIds, ulEl, i18n));
 };

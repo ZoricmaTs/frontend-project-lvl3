@@ -5,16 +5,10 @@ const allOrigins = (url) => {
   result.searchParams.set('url', url);
   result.searchParams.set('disableCache', 'true');
 
-  const urlContainer = document.getElementById('url-input');
-  const button = document.querySelector('[type="submit"]');
-
-  urlContainer.setAttribute('readonly', true);
-  button.setAttribute('disabled', 'disabled');
-
   return result.toString();
 };
 
-export default (url, i18n) => axios.get(allOrigins(url))
+export default async (url, i18n) => axios.get(allOrigins(url))
   .catch(() => {
     throw new Error(i18n.t('validation.network'));
   });

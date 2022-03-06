@@ -6,7 +6,6 @@ import validator from './validator';
 import rssData from './rss-data';
 import rssParser from './rss-parser';
 import watchStates from './watch-states';
-import renderModal from './render/modal';
 
 export default async () => {
   const defaultLang = 'ru';
@@ -22,6 +21,8 @@ export default async () => {
     urls: [],
     feeds: [],
     posts: [],
+    visitedIds: [],
+    modalPostId: null,
     form: {
       status: 'empty',
       errorType: null,
@@ -31,23 +32,22 @@ export default async () => {
   const watchedStates = watchStates(state, i18n);
 
   const updatePosts = (url) => {
-    rssData(url)
+    rssData(url, i18n)
       .then(({ data }) => {
         const { posts } = rssParser(data.contents);
         return posts;
       })
       .then((posts) => {
         const oldPosts = state.posts;
-        const newPosts = _.differenceBy(posts, oldPosts, 'id');
+        const newPosts = _.differenceBy(posts, oldPosts, 'title');
 
         const newPostsWithId = newPosts.map((post) => ({
           id: _.uniqueId(),
           ...post,
-          visited: false,
         }));
 
         if (newPostsWithId.length > 0) {
-          watchedStates.push(...newPostsWithId);
+          watchedStates.posts.push(...newPostsWithId);
         }
       })
       .finally(() => setTimeout(() => updatePosts(url), 5000));
@@ -59,25 +59,17 @@ export default async () => {
     posts.forEach((post) => {
       const button = post.querySelector('button');
       const link = post.querySelector('a');
-      const postsState = [...state.posts];
 
       button.addEventListener('click', (e) => {
         const currentPostId = e.target.dataset.id;
-        const currentPost = state.posts.find((item) => item.id === currentPostId);
-        const postState = { ...postsState[currentPostId - 1] };
-        postState.visited = true;
-        postsState[currentPostId - 1] = postState;
-        state.posts = postsState;
 
-        renderModal(currentPost, i18n);
+        watchedStates.modalPostId = currentPostId;
+        watchedStates.visitedIds.push(currentPostId);
       });
 
       link.addEventListener('click', (e) => {
         const currentPostId = e.target.dataset.id;
-        const postState = { ...postsState[currentPostId - 1] };
-        postState.visited = true;
-        postsState[currentPostId - 1] = postState;
-        state.posts = postsState;
+        watchedStates.visitedIds.push(currentPostId);
       });
     });
   };
@@ -101,6 +93,12 @@ export default async () => {
     } else {
       rssData(validation.url, i18n)
         .then(({ data }) => {
+          urlContainer.setAttribute('readonly', true);
+          button.setAttribute('disabled', 'disabled');
+
+          return data;
+        })
+        .then((data) => {
           const { title, description, posts } = rssParser(data.contents);
 
           state.urls.push(url);
@@ -109,7 +107,7 @@ export default async () => {
           const postWithId = posts.map((post) => ({
             id: _.uniqueId(),
             ...post,
-            visited: false,
+            // visited: false,
           }));
 
           watchedStates.posts.push(...postWithId);

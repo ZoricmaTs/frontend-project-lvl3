@@ -1,4 +1,5 @@
-export default (post, i18n) => {
+export default (state, i18n) => {
+  const post = state.posts.find((item) => item.id === state.modalPostId);
   const titleEl = document.querySelector('.modal-title');
   const bodyEl = document.querySelector('.modal-body');
   const linkEl = document.querySelector('.modal-footer > .btn-primary');

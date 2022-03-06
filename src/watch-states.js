@@ -1,6 +1,7 @@
 import onChange from 'on-change';
 import renderFeeds from './render/feeds';
 import renderPosts from './render/posts';
+import renderModal from './render/modal';
 
 export default (state, i18n) => {
   const input = document.getElementById('url-input');
@@ -30,8 +31,17 @@ export default (state, i18n) => {
         break;
 
       case 'posts':
-        renderPosts(value, prevValue, i18n);
+        renderPosts(state, i18n);
         break;
+
+      case 'visitedIds':
+        renderPosts(state, i18n);
+        break;
+
+      case 'modalPostId':
+        renderModal(state, i18n);
+        break;
+
 
       default:
         break;

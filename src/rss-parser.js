@@ -1,6 +1,11 @@
 export default (data) => {
   const parser = new DOMParser();
   const channel = parser.parseFromString(data, 'text/xml');
+  const error = channel.querySelector('parsererror');
+
+  if (error) {
+    throw new Error('Ресурс не содержит валидный RSS');
+  }
 
   const titleEl = channel.querySelector('title');
   const title = titleEl.textContent;
