@@ -107,7 +107,6 @@ export default async () => {
           const postWithId = posts.map((post) => ({
             id: _.uniqueId(),
             ...post,
-            // visited: false,
           }));
 
           watchedStates.posts.push(...postWithId);

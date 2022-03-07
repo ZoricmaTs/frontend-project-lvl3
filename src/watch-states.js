@@ -6,11 +6,11 @@ import renderModal from './render/modal';
 export default (state, i18n) => {
   const input = document.getElementById('url-input');
 
-  const watchedState = onChange(state, (path, value, prevValue) => {
+  const watchedState = onChange(state, (path, value) => {
+    const feedback = document.querySelector('.feedback');
+
     switch (path) {
       case 'form':
-        const feedback = document.querySelector('.feedback');
-
         input.classList.toggle('is-invalid', value.status === 'invalid');
         if (value.status === 'valid') {
           feedback.textContent = i18n.t('validation.success');
@@ -31,9 +31,6 @@ export default (state, i18n) => {
         break;
 
       case 'posts':
-        renderPosts(state, i18n);
-        break;
-
       case 'visitedIds':
         renderPosts(state, i18n);
         break;
@@ -41,7 +38,6 @@ export default (state, i18n) => {
       case 'modalPostId':
         renderModal(state, i18n);
         break;
-
 
       default:
         break;
