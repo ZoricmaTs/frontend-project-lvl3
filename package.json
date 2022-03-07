@@ -10,6 +10,12 @@
     "type": "git",
     "url": "git+https://github.com/ZoricmaTs/frontend-project-lvl3.git"
   },
+  "jest": {
+    "testEnvironment": "jsdom",
+    "transform": {
+      "^.+\\.js$": "babel-jest"
+    }
+  },
   "keywords": [],
   "author": "",
   "license": "ISC",
