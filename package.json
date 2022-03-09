@@ -27,11 +27,6 @@
   },
   "homepage": "https://github.com/ZoricmaTs/frontend-project-lvl3#readme",
   "devDependencies": {
-    "@babel/core": "^7.16.5",
-    "@babel/eslint-parser": "^7.16.5",
-    "@babel/plugin-proposal-class-properties": "^7.16.5",
-    "@babel/plugin-transform-runtime": "^7.16.5",
-    "@babel/preset-env": "^7.16.5",
     "@testing-library/dom": "^8.11.3",
     "@testing-library/jest-dom": "^5.16.2",
     "@testing-library/user-event": "^13.5.0",
