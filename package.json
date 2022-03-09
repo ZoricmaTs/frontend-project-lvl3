@@ -2,6 +2,7 @@
   "name": "@hexlet/code",
   "main": "src/app.js",
   "version": "1.0.0",
+  "type": "module",
   "description": "[![Actions Status](https://github.com/ZoricmaTs/frontend-project-lvl3/workflows/hexlet-check/badge.svg)](https://github.com/ZoricmaTs/frontend-project-lvl3/actions)",
   "scripts": {
     "test": "npx jest"
