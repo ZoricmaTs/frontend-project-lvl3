@@ -13,9 +13,6 @@
   },
   "jest": {
     "testEnvironment": "jsdom",
-    "transformIgnorePatterns": [
-      "node_modules/(?!(on-change)/)"
-    ]
   },
   "keywords": [],
   "author": "",
