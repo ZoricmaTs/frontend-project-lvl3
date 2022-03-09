@@ -12,7 +12,7 @@
     "url": "git+https://github.com/ZoricmaTs/frontend-project-lvl3.git"
   },
   "jest": {
-    "testEnvironment": "jsdom",
+    "testEnvironment": "jsdom"
   },
   "keywords": [],
   "author": "",
@@ -24,7 +24,7 @@
   "devDependencies": {
     "@testing-library/dom": "^8.11.3",
     "@testing-library/jest-dom": "^5.16.2",
-    "@testing-library/user-event": "^13.5.0",
+    "@testing-library/user-event": "^14.0.0-beta.13",
     "css-loader": "^6.5.1",
     "debug": "^4.3.3",
     "eslint": "^8.5.0",
