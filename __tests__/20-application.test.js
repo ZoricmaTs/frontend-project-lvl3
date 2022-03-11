@@ -2,7 +2,6 @@
 
 import '@testing-library/jest-dom';
 
-import { URL } from 'url';
 import fs from 'fs';
 import path from 'path';
 import { screen, waitFor } from '@testing-library/dom';
@@ -10,11 +9,11 @@ import userEventPkg from '@testing-library/user-event';
 import { rest } from 'msw';
 import { setupServer } from 'msw/node';
 
-import init from '@hexlet/code';
+import init from '../src/app.js';
 
 const userEvent = userEventPkg.default;
 
-const getFixturePath = (filename) => path.join(__dirname, '..', '__fixtures__', filename);
+const getFixturePath = (filename) => path.join('.', '__fixtures__', filename);
 const readFixture = (filename) => {
   const fixturePath = getFixturePath(filename);
 
@@ -22,8 +21,7 @@ const readFixture = (filename) => {
   return rss;
 };
 const rss1 = readFixture('rss1.xml');
-// const rss2 = readFixture('rss2.xml');
-// const rss3 = readFixture('rss3.xml');
+
 const rssUrl = 'https://ru.hexlet.io/lessons.rss';
 
 const html = readFixture('document.html');
@@ -32,7 +30,7 @@ const htmlUrl = 'https://ru.hexlet.io';
 const corsProxy = 'https://hexlet-allorigins.herokuapp.com';
 const corsProxyApi = `${corsProxy}/get`;
 
-const index = path.join(__dirname, '..', 'index.html');
+const index = path.join('.', 'index.html');
 const initHtml = fs.readFileSync(index, 'utf-8');
 
 const getResponseHandler = (url, data) => rest.get(corsProxyApi, (req, res, ctx) => {
