@@ -1,11 +1,11 @@
 import _ from 'lodash';
 import i18next from 'i18next';
-import resources from './locales';
+import resources from './locales/index.js';
 import 'bootstrap';
-import validator from './validator';
-import rssData from './rss-data';
-import rssParser from './rss-parser';
-import watchStates from './watch-states';
+import validator from './validator.js';
+import rssData from './rss-data.js';
+import rssParser from './rss-parser.js';
+import watchStates from './watch-states.js';
 
 export default async () => {
   const defaultLang = 'ru';

@@ -1,7 +1,7 @@
 import onChange from 'on-change';
-import renderFeeds from './render/feeds';
-import renderPosts from './render/posts';
-import renderModal from './render/modal';
+import renderFeeds from './render/feeds.js';
+import renderPosts from './render/posts.js';
+import renderModal from './render/modal.js';
 
 export default (state, i18n) => {
   const input = document.getElementById('url-input');
