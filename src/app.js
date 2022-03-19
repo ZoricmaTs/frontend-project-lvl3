@@ -23,8 +23,9 @@ export default async () => {
     posts: [],
     visitedIds: [],
     modalPostId: null,
+    status: 'fulfilled',
     form: {
-      status: 'empty',
+      urlStatus: 'empty',
       errorType: null,
     },
   };
@@ -75,67 +76,69 @@ export default async () => {
   };
 
   const form = document.querySelector('.rss-form');
-  const urlContainer = document.getElementById('url-input');
-  const button = document.querySelector('[type="submit"]');
 
   form.addEventListener('submit', (e) => {
     e.preventDefault();
 
     const formData = new FormData(e.target);
     const url = formData.get('url');
-    const validation = validator(url, state.urls, i18n);
 
-    if (_.has(validation, 'error')) {
-      watchedStates.form = {
-        status: 'invalid',
-        errorType: validation.error,
-      };
-    } else {
-      rssData(validation.url, i18n)
-        .then(({ data }) => {
-          urlContainer.setAttribute('readonly', true);
-          button.setAttribute('disabled', 'disabled');
-
-          return data;
-        })
-        .then((data) => {
-          const { title, description, posts } = rssParser(data.contents);
-
-          state.urls.push(url);
-          watchedStates.feeds.push({ title, description });
-
-          const postWithId = posts.map((post) => ({
-            id: _.uniqueId(),
-            ...post,
-          }));
-
-          watchedStates.posts.push(...postWithId);
-
+    validator(url, state.urls, i18n)
+      .then((validation) => {
+        if (_.has(validation, 'error')) {
           watchedStates.form = {
-            status: 'valid',
-            errorType: null,
+            urlStatus: 'invalid',
+            errorType: validation.error,
           };
 
-          handlePost();
-        })
-        .then(() => {
-          urlContainer.removeAttribute('readonly');
-          button.removeAttribute('disabled');
-        })
-        .catch((err) => {
-          watchedStates.form = {
-            status: 'invalid',
-            errorType: err.message,
-          };
+          watchedStates.status = 'fulfilled';
+          e.target.reset();
+        } else {
+          rssData(url, i18n)
+            .then(({ data }) => {
+              watchedStates.status = 'loading';
 
-          urlContainer.removeAttribute('readonly');
-          button.removeAttribute('disabled');
-        });
-    }
+              return data;
+            })
+            .then((data) => {
+              const { title, description, posts } = rssParser(data.contents);
+
+              state.urls.push(url);
+              watchedStates.feeds.push({ title, description });
+
+              const postWithId = posts.map((post) => ({
+                id: _.uniqueId(),
+                ...post,
+              }));
+
+              watchedStates.posts.push(...postWithId);
+
+              watchedStates.form = {
+                urlStatus: 'valid',
+                errorType: null,
+              };
+
+              handlePost();
+            })
+            .then((www) => {
+              watchedStates.status = 'fulfilled';
+              e.target.reset();
+            })
+            .catch((err) => {
+              console.log(`:->err`, err);
+              watchedStates.form = {
+                urlStatus: 'invalid',
+                errorType: err.message,
+              };
+
+              watchedStates.status = 'fulfilled';
+              e.target.reset();
+            });
+        }
+      });
 
     setTimeout(() => state.urls.forEach((item) => updatePosts(item)), 5000);
 
-    e.target.reset();
     e.target.focus();
   });
 };

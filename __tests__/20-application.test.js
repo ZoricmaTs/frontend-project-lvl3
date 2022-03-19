@@ -10,6 +10,9 @@ import { rest } from 'msw';
 import { setupServer } from 'msw/node';
 
 import init from '../src/app.js';
+import {jest} from '@jest/globals';
+
+jest.setTimeout(10000);
 
 const userEvent = userEventPkg.default;
 
@@ -150,7 +153,7 @@ describe('handle disabling ui elements during loading', () => {
     expect(screen.getByRole('button', { name: 'add' })).toBeEnabled();
   });
 
-  test('handle failed loading', async () => {
+  test.only('handle failed loading', async () => {
     const handler = getResponseHandler(htmlUrl, html);
     server.use(handler);
 

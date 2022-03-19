@@ -5,6 +5,7 @@ import renderModal from './render/modal.js';
 
 export default (state, i18n) => {
   const input = document.getElementById('url-input');
+  const button = document.querySelector('[type="submit"]');
 
   const watchedState = onChange(state, (path, value) => {
     const feedback = document.querySelector('.feedback');
@@ -12,11 +13,12 @@ export default (state, i18n) => {
     switch (path) {
       case 'form':
         input.classList.toggle('is-invalid', value.status === 'invalid');
-        if (value.status === 'valid') {
+
+        if (value.urlStatus === 'valid') {
           feedback.textContent = i18n.t('validation.success');
           feedback.classList.add('text-success');
           feedback.classList.remove('text-danger');
-        } else if (value.status === 'empty' && value.errorType === null) {
+        } else if (value.urlStatus === 'empty' && value.errorType === null) {
           feedback.textContent = '';
         } else {
           feedback.textContent = value.errorType;
@@ -37,6 +39,24 @@ export default (state, i18n) => {
 
       case 'modalPostId':
         renderModal(state, i18n);
+        break;
+
+      case 'status':
+        switch (value) {
+          case 'loading':
+            input.setAttribute('readonly', true);
+            button.setAttribute('disabled', 'disabled');
+
+            break;
+
+          case 'fulfilled':
+            input.value = '';
+            input.removeAttribute('readonly');
+            button.removeAttribute('disabled');
+
+            break;
+        }
+
         break;
 
       default:
