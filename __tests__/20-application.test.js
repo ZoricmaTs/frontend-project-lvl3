@@ -9,8 +9,8 @@ import userEventPkg from '@testing-library/user-event';
 import { rest } from 'msw';
 import { setupServer } from 'msw/node';
 
+import { jest } from '@jest/globals';
 import init from '../src/app.js';
-import {jest} from '@jest/globals';
 
 jest.setTimeout(10000);
 
@@ -30,7 +30,7 @@ const rssUrl = 'https://ru.hexlet.io/lessons.rss';
 const html = readFixture('document.html');
 const htmlUrl = 'https://ru.hexlet.io';
 
-const corsProxy = 'https://hexlet-allorigins.herokuapp.com';
+const corsProxy = 'https://allorigins.hexlet.app';
 const corsProxyApi = `${corsProxy}/get`;
 
 const index = path.join('.', 'index.html');
@@ -153,7 +153,7 @@ describe('handle disabling ui elements during loading', () => {
     expect(screen.getByRole('button', { name: 'add' })).toBeEnabled();
   });
 
-  test.only('handle failed loading', async () => {
+  test('handle failed loading', async () => {
     const handler = getResponseHandler(htmlUrl, html);
     server.use(handler);
 

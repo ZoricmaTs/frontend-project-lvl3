@@ -9,6 +9,7 @@ export default {
       duplicate: 'RSS уже существует',
       invalid: 'Ссылка должна быть валидным URL',
       network: 'Ошибка сети',
+      invalidRss: 'Ресурс не содержит валидный RSS',
     },
     feeds: {
       title: 'Фиды',

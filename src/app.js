@@ -101,7 +101,7 @@ export default async () => {
               return data;
             })
             .then((data) => {
-              const { title, description, posts } = rssParser(data.contents);
+              const { title, description, posts } = rssParser(data.contents, i18n);
 
               state.urls.push(url);
               watchedStates.feeds.push({ title, description });
@@ -120,15 +120,14 @@ export default async () => {
 
               handlePost();
             })
-            .then((www) => {
+            .then(() => {
               watchedStates.status = 'fulfilled';
               e.target.reset();
             })
-            .catch((err) => {
-              console.log(`:->err`, err);
+            .catch((error) => {
               watchedStates.form = {
                 urlStatus: 'invalid',
-                errorType: err.message,
+                errorType: error.message,
               };
 
               watchedStates.status = 'fulfilled';

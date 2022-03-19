@@ -3,7 +3,6 @@ root: true
 plugins:
   # https://github.com/jest-community/eslint-plugin-jest
   - jest
-  - babel
   - testing-library
   - jest-dom
 
@@ -13,8 +12,6 @@ env:
   es2020: true
   jest: true
   browser: true
-
-parser: '@babel/eslint-parser'
 
 extends:
   - 'airbnb-base'

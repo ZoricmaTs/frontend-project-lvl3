@@ -42,19 +42,13 @@ export default (state, i18n) => {
         break;
 
       case 'status':
-        switch (value) {
-          case 'loading':
-            input.setAttribute('readonly', true);
-            button.setAttribute('disabled', 'disabled');
-
-            break;
-
-          case 'fulfilled':
-            input.value = '';
-            input.removeAttribute('readonly');
-            button.removeAttribute('disabled');
-
-            break;
+        if (value === 'loading') {
+          input.setAttribute('readonly', true);
+          button.setAttribute('disabled', 'disabled');
+        } else {
+          input.value = '';
+          input.removeAttribute('readonly');
+          button.removeAttribute('disabled');
         }
 
         break;

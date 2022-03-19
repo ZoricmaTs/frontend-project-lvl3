@@ -12,9 +12,5 @@ export default (value, urls, i18n) => {
 
   const schema = yup.string().required().url().notOneOf(urls);
 
-  return schema.validate(value, { abortEarly: false })
-    .catch((e) => ({
-        error: e.errors,
-      })
-    );
+  return schema.validate(value, { abortEarly: false }).catch((e) => ({ error: e.errors }));
 };

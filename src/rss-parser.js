@@ -1,10 +1,10 @@
-export default (data) => {
+export default (data, i18n) => {
   const parser = new DOMParser();
   const channel = parser.parseFromString(data, 'text/xml');
   const error = channel.querySelector('parsererror');
 
   if (error) {
-    throw new Error('Ресурс не содержит валидный RSS');
+    throw new Error(i18n.t('validation.invalidRss'));
   }
 
   const titleEl = channel.querySelector('title');
