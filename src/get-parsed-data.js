@@ -4,7 +4,7 @@ export default (data) => {
   const error = channel.querySelector('parsererror');
 
   if (error) {
-    return 'invalidRss';
+    throw new Error('invalidRss');
   }
 
   const titleEl = channel.querySelector('title');

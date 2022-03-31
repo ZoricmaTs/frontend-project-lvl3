@@ -5,7 +5,7 @@ import resources from './locales/index.js';
 import 'bootstrap';
 import checkUrlValidity from './check-url-validity.js';
 import rssData from './rss-data.js';
-import getParsedData from './getParsedData.js';
+import getParsedData from './get-parsed-data.js';
 import watchStates from './watch-states.js';
 
 const allOrigins = (url) => {
@@ -16,7 +16,7 @@ const allOrigins = (url) => {
   return result.toString();
 };
 
-export default async () => {
+export default () => {
   const defaultLang = 'ru';
   const i18n = i18next.createInstance();
 
@@ -26,6 +26,21 @@ export default async () => {
     resources,
   })
     .then(() => {
+      const elements = {
+        form: document.querySelector('.rss-form'),
+        input: document.getElementById('url-input'),
+        feedback: document.querySelector('.feedback'),
+        submitButton: document.querySelector('[type="submit"]'),
+        feedsContainer: document.querySelector('.feeds'),
+        postsContainer: document.querySelector('.posts'),
+        modal: {
+          title: document.querySelector('.modal-title'),
+          body: document.querySelector('.modal-body'),
+          link: document.querySelector('.modal-footer > .btn-primary'),
+          closeButton: document.querySelector('.modal-footer > .btn-secondary'),
+        }
+      };
+
       const state = {
         urls: [],
         feeds: [],
@@ -39,7 +54,7 @@ export default async () => {
         },
       };
 
-      const watchedStates = watchStates(state, i18n);
+      const watchedStates = watchStates(state, i18n, elements);
 
       const updatePosts = (url) => {
         rssData(url, i18n)
@@ -61,30 +76,9 @@ export default async () => {
           .finally(() => setTimeout(() => updatePosts(url), 5000));
       };
 
-      const handlePost = () => {
-        const postsContainers = document.querySelectorAll('.post');
+      setTimeout(() => state.urls.forEach((item) => updatePosts(item)), 5000);
 
-        postsContainers.forEach((post) => {
-          const button = post.querySelector('button');
-          const link = post.querySelector('a');
-
-          button.addEventListener('click', (e) => {
-            const currentPostId = e.target.dataset.id;
-
-            watchedStates.modalPostId = currentPostId;
-            watchedStates.visitedIds.push(currentPostId);
-          });
-
-          link.addEventListener('click', (e) => {
-            const currentPostId = e.target.dataset.id;
-            watchedStates.visitedIds.push(currentPostId);
-          });
-        });
-      };
-
-      const form = document.querySelector('.rss-form');
-
-      form.addEventListener('submit', (e) => {
+      elements.form.addEventListener('submit', (e) => {
         e.preventDefault();
 
         const formData = new FormData(e.target);
@@ -100,6 +94,9 @@ export default async () => {
 
               watchedStates.status = 'fulfilled';
             } else {
+
+              watchedStates.status = 'loading';
+              
               axios.get(allOrigins(url))
                 .then(({ data }) => {
                   const parsedData = getParsedData(data.contents);
@@ -118,19 +115,14 @@ export default async () => {
                       ...post,
                     }));
 
-                    watchedStates.status = 'loading';
-
                     watchedStates.posts.push(...postWithId);
 
                     watchedStates.form = {
                       urlStatus: 'valid',
                       errorType: null,
                     };
-
-                    handlePost();
                   }
-                })
-                .then(() => {
+
                   watchedStates.status = 'fulfilled';
                   e.target.reset();
                 })
@@ -139,16 +131,28 @@ export default async () => {
                     urlStatus: 'invalid',
                     errorType: error.message,
                   };
-
-                  watchedStates.status = 'fulfilled';
+                  
+                  watchedStates.status = 'rejected';
                   e.target.reset();
                 });
             }
           });
 
-        setTimeout(() => state.urls.forEach((item) => updatePosts(item)), 5000);
 
         e.target.focus();
       });
+
+      elements.postsContainer.addEventListener('click', (e) => {
+        const currentPostButtonId = e.target.dataset.buttonId;
+        if (currentPostButtonId) {
+          watchedStates.modalPostId = currentPostButtonId;
+          watchedStates.visitedIds.push(currentPostButtonId);
+        }
+
+        const currentPostLinkId = e.target.dataset.linkId;
+        if (currentPostLinkId) {
+          watchedStates.visitedIds.push(currentPostLinkId);
+        }
+      })
     });
 };
