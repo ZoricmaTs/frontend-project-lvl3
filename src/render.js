@@ -1,4 +1,4 @@
-export const renderFeedback = (value, i18n, elements) => {
+export const feedback = (value, i18n, elements) => {
   elements.input.classList.toggle('is-invalid', value.status === 'invalid');
 
   if (value.urlStatus === 'valid') {
@@ -14,12 +14,12 @@ export const renderFeedback = (value, i18n, elements) => {
   }
 };
 
-export const renderFeeds = (feeds, i18n, feedsContainer) => {
+export const feeds = (value, i18n, feedsContainer) => {
   feedsContainer.innerHTML = `<h2 class="card-title h4">${i18n.t('feeds.title')}</h2>`;
   const feedsList = document.createElement('ul');
   feedsList.classList.add('list-group', 'mb-5');
   feedsContainer.append(feedsList);
-  
+
   const renderFeed = ({ title, description }) => {
     const li = document.createElement('li');
     li.classList.add('list-group-item', 'border-0', 'border-end-0');
@@ -27,9 +27,8 @@ export const renderFeeds = (feeds, i18n, feedsContainer) => {
     feedsList.prepend(li);
   };
 
-  feeds.forEach(renderFeed);
+  value.forEach(renderFeed);
 };
-
 
 const renderPost = (post, visitedIds, parentNode, i18n) => {
   const btnEl = document.createElement('button');
@@ -64,7 +63,7 @@ const renderPost = (post, visitedIds, parentNode, i18n) => {
   parentNode.append(liEl);
 };
 
-export const renderPosts = (state, i18n, postsContainer) => {
+export const posts = (state, i18n, postsContainer) => {
   postsContainer.innerHTML = `<h2 class="card-title h4">${i18n.t('posts.title')}</h2>`;
   const postsList = document.createElement('ul');
   postsList.classList.add('list-group', 'border-0', 'rounded-0');
@@ -73,17 +72,17 @@ export const renderPosts = (state, i18n, postsContainer) => {
   state.posts.forEach((post) => renderPost(post, state.visitedIds, postsList, i18n));
 };
 
-export const renderModal = (state, i18n, modal) => {
+export const modal = (state, i18n, modalElements) => {
   const post = state.posts.find((item) => item.id === state.modalPostId);
 
-  modal.title.textContent = post.title;
-  modal.body.textContent = post.description;
-  modal.link.setAttribute('href', post.link);
-  modal.link.textContent = i18n.t('modal.link');
-  modal.closeButton.textContent = i18n.t('modal.close');
+  modalElements.title.textContent = post.title;
+  modalElements.body.textContent = post.description;
+  modalElements.link.setAttribute('href', post.link);
+  modalElements.link.textContent = i18n.t('modal.link');
+  modalElements.closeButton.textContent = i18n.t('modal.close');
 };
 
-export const renderInputStatus = (status, elements) => {
+export const inputStatus = (status, elements) => {
   if (status === 'loading') {
     elements.input.setAttribute('readonly', true);
     elements.submitButton.setAttribute('disabled', 'disabled');
@@ -92,5 +91,4 @@ export const renderInputStatus = (status, elements) => {
     elements.input.removeAttribute('readonly');
     elements.submitButton.removeAttribute('disabled');
   }
-
 };

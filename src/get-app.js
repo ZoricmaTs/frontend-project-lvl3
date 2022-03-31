@@ -38,7 +38,7 @@ export default () => {
           body: document.querySelector('.modal-body'),
           link: document.querySelector('.modal-footer > .btn-primary'),
           closeButton: document.querySelector('.modal-footer > .btn-secondary'),
-        }
+        },
       };
 
       const state = {
@@ -94,9 +94,8 @@ export default () => {
 
               watchedStates.status = 'fulfilled';
             } else {
-
               watchedStates.status = 'loading';
-              
+
               axios.get(allOrigins(url))
                 .then(({ data }) => {
                   const parsedData = getParsedData(data.contents);
@@ -131,13 +130,12 @@ export default () => {
                     urlStatus: 'invalid',
                     errorType: error.message,
                   };
-                  
+
                   watchedStates.status = 'rejected';
                   e.target.reset();
                 });
             }
           });
-
 
         e.target.focus();
       });
@@ -153,6 +151,6 @@ export default () => {
         if (currentPostLinkId) {
           watchedStates.visitedIds.push(currentPostLinkId);
         }
-      })
+      });
     });
 };

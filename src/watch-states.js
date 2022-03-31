@@ -1,29 +1,28 @@
 import onChange from 'on-change';
-import { renderFeeds, renderFeedback, renderPosts, renderModal, renderInputStatus } from './render.js';
-
+import * as render from './render.js';
 
 export default (state, i18n, elements) => {
   const watchedState = onChange(state, (path, value) => {
     switch (path) {
       case 'form':
-        renderFeedback(value, i18n, elements);
+        render.feedback(value, i18n, elements);
         break;
 
       case 'feeds':
-        renderFeeds(value, i18n, elements.feedsContainer);
+        render.feeds(value, i18n, elements.feedsContainer);
         break;
 
       case 'posts':
       case 'visitedIds':
-        renderPosts(state, i18n, elements.postsContainer);
+        render.posts(state, i18n, elements.postsContainer);
         break;
 
       case 'modalPostId':
-        renderModal(state, i18n, elements.modal);
+        render.modal(state, i18n, elements.modal);
         break;
 
       case 'status':
-        renderInputStatus(value, elements)
+        render.inputStatus(value, elements);
         break;
 
       default:
