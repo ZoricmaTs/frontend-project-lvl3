@@ -8,7 +8,20 @@ export const feedback = (value, i18n, elements) => {
   } else if (value.urlStatus === 'empty' && value.errorType === null) {
     elements.feedback.textContent = '';
   } else {
-    elements.feedback.textContent = value.errorType === 'invalidRss' ? i18n.t('validation.invalidRss') : value.errorType;
+    switch (value.errorType) {
+      case 'invalidRss':
+        elements.feedback.textContent = i18n.t('validation.invalidRss');
+        break;
+
+      case 'Network Error':
+        elements.feedback.textContent = i18n.t('validation.network');
+        break;
+
+      default:
+        elements.feedback.textContent = value.errorType;
+        break;
+    }
+
     elements.feedback.classList.remove('text-success');
     elements.feedback.classList.add('text-danger');
   }

@@ -4,7 +4,6 @@ import axios from 'axios';
 import resources from './locales/index.js';
 import 'bootstrap';
 import checkUrlValidity from './check-url-validity.js';
-import rssData from './rss-data.js';
 import getParsedData from './get-parsed-data.js';
 import watchStates from './watch-states.js';
 
@@ -57,7 +56,7 @@ export default () => {
       const watchedStates = watchStates(state, i18n, elements);
 
       const updatePosts = (url) => {
-        rssData(url, i18n)
+        axios.get(allOrigins(url))
           .then(({ data }) => {
             const { posts } = getParsedData(data.contents);
 
@@ -72,6 +71,12 @@ export default () => {
             if (newPostsWithId.length > 0) {
               watchedStates.posts.push(...newPostsWithId);
             }
+          })
+          .catch((error) => {
+            watchedStates.form = {
+              urlStatus: 'invalid',
+              errorType: error.message,
+            };
           })
           .finally(() => setTimeout(() => updatePosts(url), 5000));
       };
