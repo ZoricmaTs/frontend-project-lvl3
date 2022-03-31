@@ -1,10 +1,10 @@
-export default (data, i18n) => {
+export default (data) => {
   const parser = new DOMParser();
   const channel = parser.parseFromString(data, 'text/xml');
   const error = channel.querySelector('parsererror');
 
   if (error) {
-    throw new Error(i18n.t('validation.invalidRss'));
+    return 'invalidRss';
   }
 
   const titleEl = channel.querySelector('title');
@@ -15,6 +15,7 @@ export default (data, i18n) => {
   const link = linkEl.textContent;
 
   const itemsEls = channel.querySelectorAll('item');
+
   const posts = [...itemsEls].map((post) => {
     const titlePostEl = post.querySelector('title');
     const linkPostEl = channel.querySelector('link');
