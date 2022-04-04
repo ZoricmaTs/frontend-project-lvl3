@@ -3,9 +3,9 @@ import i18next from 'i18next';
 import axios from 'axios';
 import resources from './locales/index.js';
 import 'bootstrap';
-import checkUrlValidity from './check-url-validity.js';
-import getParsedData from './get-parsed-data.js';
-import watchStates from './watch-states.js';
+import checkUrlValidity from './checkUrlValidity.js';
+import getParsedData from './getParsedData.js';
+import watchStates from './watchStates.js';
 
 const allOrigins = (url) => {
   const result = new URL('/get', 'https://allorigins.hexlet.app');
@@ -68,9 +68,7 @@ export default () => {
               ...post,
             }));
 
-            if (newPostsWithId.length > 0) {
-              watchedStates.posts.push(...newPostsWithId);
-            }
+            watchedStates.posts.push(...newPostsWithId);
           })
           .catch((error) => {
             watchedStates.form = {
