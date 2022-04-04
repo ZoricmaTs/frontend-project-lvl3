@@ -10,7 +10,7 @@ import { rest } from 'msw';
 import { setupServer } from 'msw/node';
 
 import { jest } from '@jest/globals';
-import init from '../src/get-app.js';
+import init from '../src/getApp.js';
 
 jest.setTimeout(10000);
 

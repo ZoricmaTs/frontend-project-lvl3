@@ -95,7 +95,7 @@ export default () => {
                 errorType: validation.error,
               };
 
-              watchedStates.status = 'fulfilled';
+              watchedStates.status = 'rejected';
             } else {
               watchedStates.status = 'loading';
 
