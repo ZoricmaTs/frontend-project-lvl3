@@ -146,7 +146,6 @@ export default () => {
                   }
 
                   watchedStates.status = 'fulfilled';
-                  e.target.reset();
                 })
                 .catch((error) => {
                   watchedStates.form = {
