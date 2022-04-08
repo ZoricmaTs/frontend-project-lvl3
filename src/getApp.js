@@ -1,9 +1,9 @@
 import _ from 'lodash';
+import * as yup from 'yup';
 import i18next from 'i18next';
 import axios from 'axios';
 import resources from './locales/index.js';
 import 'bootstrap';
-import checkUrlValidity from './checkUrlValidity.js';
 import getParsedData from './getParsedData.js';
 import watchStates from './watchStates.js';
 
@@ -13,6 +13,21 @@ const allOrigins = (url) => {
   result.searchParams.set('disableCache', 'true');
 
   return result.toString();
+};
+
+const checkUrlValidity = (value, urls, i18n) => {
+  yup.setLocale({
+    mixed: {
+      notOneOf: i18n.t('validation.duplicate'),
+    },
+    string: {
+      url: i18n.t('validation.invalid'),
+    },
+  });
+
+  const schema = yup.string().required().url().notOneOf(urls);
+
+  return schema.validate(value, { abortEarly: false }).catch((e) => ({ error: e.errors }));
 };
 
 export default () => {
@@ -49,6 +64,7 @@ export default () => {
         status: 'idle',
         form: {
           urlStatus: 'empty',
+          status: 'empty',
           errorType: null,
         },
       };
@@ -72,7 +88,8 @@ export default () => {
           })
           .catch((error) => {
             watchedStates.form = {
-              urlStatus: 'invalid',
+              urlStatus: 'valid',
+              status: 'invalid',
               errorType: error.message,
             };
           })
@@ -92,6 +109,7 @@ export default () => {
             if (validation.error) {
               watchedStates.form = {
                 urlStatus: 'invalid',
+                status: 'empty',
                 errorType: validation.error,
               };
 
@@ -106,6 +124,7 @@ export default () => {
                   if (parsedData === 'invalidRss') {
                     watchedStates.form = {
                       urlStatus: 'invalid',
+                      status: 'valid',
                       errorType: parsedData,
                     };
                   } else {
@@ -121,6 +140,7 @@ export default () => {
 
                     watchedStates.form = {
                       urlStatus: 'valid',
+                      status: 'valid',
                       errorType: null,
                     };
                   }
@@ -130,7 +150,8 @@ export default () => {
                 })
                 .catch((error) => {
                   watchedStates.form = {
-                    urlStatus: 'invalid',
+                    urlStatus: 'valid',
+                    status: 'invalid',
                     errorType: error.message,
                   };
 

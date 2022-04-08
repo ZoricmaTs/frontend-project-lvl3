@@ -3,11 +3,11 @@ import onChange from 'on-change';
 const renderFeedback = (value, i18n, elements) => {
   elements.input.classList.toggle('is-invalid', value.status === 'invalid');
 
-  if (value.urlStatus === 'valid') {
+  if (value.urlStatus === 'valid' &&  value.status === 'valid') {
     elements.feedback.textContent = i18n.t('validation.success');
     elements.feedback.classList.add('text-success');
     elements.feedback.classList.remove('text-danger');
-  } else if (value.urlStatus === 'empty' && value.errorType === null) {
+  } else if (value.urlStatus === 'empty' && (value.status === 'empty') && value.errorType === null) {
     elements.feedback.textContent = '';
   } else {
     switch (value.errorType) {
