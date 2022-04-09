@@ -120,38 +120,31 @@ export default () => {
               axios.get(allOrigins(url))
                 .then(({ data }) => {
                   const parsedData = getParsedData(data.contents);
+                  state.urls.push(url);
+                  watchedStates.feeds.push(parsedData);
 
-                  if (parsedData === 'invalidRss') {
-                    watchedStates.form = {
-                      urlStatus: 'invalid',
-                      status: 'valid',
-                      errorType: parsedData,
-                    };
-                  } else {
-                    state.urls.push(url);
-                    watchedStates.feeds.push(parsedData);
+                  const postWithId = parsedData.posts.map((post) => ({
+                    id: _.uniqueId(),
+                    ...post,
+                  }));
 
-                    const postWithId = parsedData.posts.map((post) => ({
-                      id: _.uniqueId(),
-                      ...post,
-                    }));
+                  watchedStates.posts.push(...postWithId);
 
-                    watchedStates.posts.push(...postWithId);
-
-                    watchedStates.form = {
-                      urlStatus: 'valid',
-                      status: 'valid',
-                      errorType: null,
-                    };
-                  }
+                  watchedStates.form = {
+                    urlStatus: 'valid',
+                    status: 'valid',
+                    errorType: null,
+                  };
 
                   watchedStates.status = 'fulfilled';
                 })
                 .catch((error) => {
+                  const errorMessage = error.message === 'invalidRss' ? i18n.t('validation.invalidRss') : i18n.t('validation.network');
+
                   watchedStates.form = {
                     urlStatus: 'valid',
                     status: 'invalid',
-                    errorType: error.message,
+                    errorType: errorMessage,
                   };
 
                   watchedStates.status = 'rejected';

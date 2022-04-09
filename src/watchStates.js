@@ -1,36 +1,23 @@
 import onChange from 'on-change';
 
 const renderFeedback = (value, i18n, elements) => {
-  const isValid = value.urlStatus &&  value.status === 'valid';
-  const isEmpty = value.urlStatus &&  value.status === 'empty' && value.errorType === null;
+  const isValid = value.urlStatus && value.status === 'valid';
+  const isEmpty = value.urlStatus && value.status === 'empty' && value.errorType === null;
 
-  elements.input.classList.toggle('is-invalid', isValid);
-
-  if (isEmpty) {
-    elements.feedback.textContent = '';
-  } 
+  elements.input.classList.toggle('is-invalid', value.status === 'invalid');
 
   if (isValid) {
     elements.feedback.textContent = i18n.t('validation.success');
     elements.feedback.classList.add('text-success');
     elements.feedback.classList.remove('text-danger');
   } else {
-    switch (value.errorType) {
-      case 'invalidRss':
-        elements.feedback.textContent = i18n.t('validation.invalidRss');
-        break;
-
-      case 'Network Error':
-        elements.feedback.textContent = i18n.t('validation.network');
-        break;
-
-      default:
-        elements.feedback.textContent = value.errorType;
-        break;
-    }
-
+    elements.feedback.textContent = value.errorType;
     elements.feedback.classList.remove('text-success');
     elements.feedback.classList.add('text-danger');
+  }
+
+  if (isEmpty) {
+    elements.feedback.textContent = '';
   }
 };
 

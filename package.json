@@ -1,6 +1,6 @@
 {
   "name": "@hexlet/code",
-  "main": "src/get-app.js",
+  "main": "src/getApp.js",
   "version": "1.0.0",
   "type": "module",
   "description": "RSS",
