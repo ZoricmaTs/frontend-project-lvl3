@@ -72,17 +72,18 @@ export default () => {
 
       const watchedStates = watchStates(state, i18n, elements);
 
-      const updatePosts = (url) => {
-        axios.get(getUrl(url))
+      const updatePost = (post) => {
+        axios.get(getUrl(post.url))
           .then(({ data }) => {
             const { posts } = getParsedData(data.contents);
 
             const oldPosts = state.posts;
             const newPosts = _.differenceBy(posts, oldPosts, 'title');
 
-            const newPostsWithId = newPosts.map((post) => ({
+            const newPostsWithId = newPosts.map((item) => ({
               id: _.uniqueId(),
-              ...post,
+              feedId: post.feedId,
+              ...item,
             }));
 
             watchedStates.posts.push(...newPostsWithId);
@@ -90,10 +91,10 @@ export default () => {
           .catch((error) => {
             watchedStates.form.errorType = error.message;
           })
-          .finally(() => setTimeout(() => updatePosts(url), 5000));
+          .finally(() => setTimeout(() => updatePost(post), 5000));
       };
 
-      setTimeout(() => state.feeds.forEach((item) => updatePosts(item.url)), 5000);
+      setTimeout(() => state.feeds.forEach((item) => updatePost(item)), 5000);
 
       elements.form.addEventListener('submit', (e) => {
         e.preventDefault();
@@ -115,12 +116,14 @@ export default () => {
               axios.get(getUrl(url))
                 .then(({ data }) => {
                   const parsedData = getParsedData(data.contents);
+                  const feedId = _.uniqueId();
                   const feeds = Object.assign(parsedData, { id: _.uniqueId(), url });
 
                   watchedStates.feeds.push(feeds);
 
                   const postsWithId = parsedData.posts.map((post) => ({
                     id: _.uniqueId(),
+                    feedId,
                     ...post,
                   }));
 
