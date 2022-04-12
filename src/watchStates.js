@@ -1,8 +1,8 @@
 import onChange from 'on-change';
 
 const renderFeedback = (value, i18n, elements) => {
-  const isValid = value.urlStatus && value.status === 'valid';
-  const isEmpty = value.urlStatus && value.status === 'empty' && value.errorType === null;
+  const isValid = value.valid && value.status === 'valid';
+  const isEmpty = value.valid && value.status === 'empty' && value.errorType === null;
 
   elements.input.classList.toggle('is-invalid', value.status === 'invalid');
 

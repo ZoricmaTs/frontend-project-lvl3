@@ -7,7 +7,7 @@ import 'bootstrap';
 import getParsedData from './getParsedData.js';
 import watchStates from './watchStates.js';
 
-const allOrigins = (url) => {
+const getUrl = (url) => {
   const result = new URL('/get', 'https://allorigins.hexlet.app');
   result.searchParams.set('url', url);
   result.searchParams.set('disableCache', 'true');
@@ -15,7 +15,7 @@ const allOrigins = (url) => {
   return result.toString();
 };
 
-const checkUrlValidity = (value, urls, i18n) => {
+const checkUrlValidity = (value, feeds, i18n) => {
   yup.setLocale({
     mixed: {
       notOneOf: i18n.t('validation.duplicate'),
@@ -24,6 +24,8 @@ const checkUrlValidity = (value, urls, i18n) => {
       url: i18n.t('validation.invalid'),
     },
   });
+
+  const urls = feeds.map((item) => item.url);
 
   const schema = yup.string().required().url().notOneOf(urls);
 
@@ -56,14 +58,13 @@ export default () => {
       };
 
       const state = {
-        urls: [],
         feeds: [],
         posts: [],
         visitedIds: [],
         modalPostId: null,
         status: 'idle',
         form: {
-          urlStatus: 'empty',
+          valid: 'empty',
           status: 'empty',
           errorType: null,
         },
@@ -72,7 +73,7 @@ export default () => {
       const watchedStates = watchStates(state, i18n, elements);
 
       const updatePosts = (url) => {
-        axios.get(allOrigins(url))
+        axios.get(getUrl(url))
           .then(({ data }) => {
             const { posts } = getParsedData(data.contents);
 
@@ -87,16 +88,12 @@ export default () => {
             watchedStates.posts.push(...newPostsWithId);
           })
           .catch((error) => {
-            watchedStates.form = {
-              urlStatus: 'valid',
-              status: 'invalid',
-              errorType: error.message,
-            };
+            watchedStates.form.errorType = error.message;
           })
           .finally(() => setTimeout(() => updatePosts(url), 5000));
       };
 
-      setTimeout(() => state.urls.forEach((item) => updatePosts(item)), 5000);
+      setTimeout(() => state.feeds.forEach((item) => updatePosts(item.url)), 5000);
 
       elements.form.addEventListener('submit', (e) => {
         e.preventDefault();
@@ -104,34 +101,33 @@ export default () => {
         const formData = new FormData(e.target);
         const url = formData.get('url');
 
-        checkUrlValidity(url, state.urls, i18n)
+        checkUrlValidity(url, state.feeds, i18n)
           .then((validation) => {
             if (validation.error) {
               watchedStates.form = {
-                urlStatus: 'invalid',
+                valid: 'invalid',
                 status: 'empty',
                 errorType: validation.error,
               };
-
-              watchedStates.status = 'rejected';
             } else {
               watchedStates.status = 'loading';
 
-              axios.get(allOrigins(url))
+              axios.get(getUrl(url))
                 .then(({ data }) => {
                   const parsedData = getParsedData(data.contents);
-                  state.urls.push(url);
-                  watchedStates.feeds.push(parsedData);
+                  const feeds = Object.assign(parsedData, { id: _.uniqueId(), url });
 
-                  const postWithId = parsedData.posts.map((post) => ({
+                  watchedStates.feeds.push(feeds);
+
+                  const postsWithId = parsedData.posts.map((post) => ({
                     id: _.uniqueId(),
                     ...post,
                   }));
 
-                  watchedStates.posts.push(...postWithId);
+                  watchedStates.posts.push(...postsWithId);
 
                   watchedStates.form = {
-                    urlStatus: 'valid',
+                    valid: 'valid',
                     status: 'valid',
                     errorType: null,
                   };
@@ -142,7 +138,7 @@ export default () => {
                   const errorMessage = error.message === 'invalidRss' ? i18n.t('validation.invalidRss') : i18n.t('validation.network');
 
                   watchedStates.form = {
-                    urlStatus: 'valid',
+                    valid: 'valid',
                     status: 'invalid',
                     errorType: errorMessage,
                   };
