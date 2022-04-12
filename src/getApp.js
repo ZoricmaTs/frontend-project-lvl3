@@ -15,13 +15,29 @@ const getUrl = (url) => {
   return result.toString();
 };
 
-const checkUrlValidity = (value, feeds, i18n) => {
+const getErrorMessage = (error) => {
+  switch (error) {
+    case 'invalidRss':
+      return 'validation.invalidRss';
+
+    case 'duplicate':
+      return 'validation.duplicate';
+
+    case 'invalid':
+      return 'validation.invalid';
+
+    default:
+      return 'validation.network';
+  }
+};
+
+const checkUrlValidity = (value, feeds) => {
   yup.setLocale({
     mixed: {
-      notOneOf: i18n.t('validation.duplicate'),
+      notOneOf: 'duplicate',
     },
     string: {
-      url: i18n.t('validation.invalid'),
+      url: 'invalid',
     },
   });
 
@@ -29,7 +45,7 @@ const checkUrlValidity = (value, feeds, i18n) => {
 
   const schema = yup.string().required().url().notOneOf(urls);
 
-  return schema.validate(value, { abortEarly: false }).catch((e) => ({ error: e.errors }));
+  return schema.validate(value, { abortEarly: false }).catch((e) => ({ errors: e.errors }));
 };
 
 export default () => {
@@ -89,7 +105,12 @@ export default () => {
             watchedStates.posts.push(...newPostsWithId);
           })
           .catch((error) => {
-            watchedStates.form.errorType = error.message;
+            const form = {
+              ...watchedStates.form,
+              errorType: error.message,
+            };
+
+            watchedStates.form = form;
           })
           .finally(() => setTimeout(() => updatePost(post), 5000));
       };
@@ -102,13 +123,15 @@ export default () => {
         const formData = new FormData(e.target);
         const url = formData.get('url');
 
-        checkUrlValidity(url, state.feeds, i18n)
+        checkUrlValidity(url, state.feeds)
           .then((validation) => {
-            if (validation.error) {
+            if (validation.errors) {
+              const errors = validation.errors.map((error) => i18n.t(getErrorMessage(error)));
+
               watchedStates.form = {
                 valid: 'invalid',
                 status: 'empty',
-                errorType: validation.error,
+                errorType: errors,
               };
             } else {
               watchedStates.status = 'loading';
@@ -129,25 +152,24 @@ export default () => {
 
                   watchedStates.posts.push(...postsWithId);
 
-                  watchedStates.form = {
-                    valid: 'valid',
+                  const form = {
+                    ...watchedStates.form,
                     status: 'valid',
                     errorType: null,
                   };
 
+                  watchedStates.form = form;
                   watchedStates.status = 'fulfilled';
                 })
                 .catch((error) => {
-                  const errorMessage = error.message === 'invalidRss' ? i18n.t('validation.invalidRss') : i18n.t('validation.network');
-
-                  watchedStates.form = {
-                    valid: 'valid',
+                  const form = {
+                    ...watchedStates.form,
                     status: 'invalid',
-                    errorType: errorMessage,
+                    errorType: i18n.t(getErrorMessage(error.message)),
                   };
 
+                  watchedStates.form = form;
                   watchedStates.status = 'rejected';
-                  e.target.reset();
                 });
             }
           });
