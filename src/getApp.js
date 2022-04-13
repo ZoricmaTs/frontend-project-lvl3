@@ -86,6 +86,7 @@ export default () => {
         },
       };
 
+      const visitedIdsSet = new Set();
       const watchedStates = watchStates(state, i18n, elements);
 
       const updatePost = (post) => {
@@ -181,12 +182,20 @@ export default () => {
         const currentPostButtonId = e.target.dataset.buttonId;
         if (currentPostButtonId) {
           watchedStates.modalPostId = currentPostButtonId;
-          watchedStates.visitedIds.push(currentPostButtonId);
+          if (!visitedIdsSet.has(currentPostButtonId)) {
+            watchedStates.visitedIds.push(currentPostButtonId);
+          }
+
+          visitedIdsSet.add(currentPostButtonId);
         }
 
         const currentPostLinkId = e.target.dataset.linkId;
         if (currentPostLinkId) {
-          watchedStates.visitedIds.push(currentPostLinkId);
+          if (!visitedIdsSet.has(currentPostLinkId)) {
+            watchedStates.visitedIds.push(currentPostLinkId);
+          }
+
+          visitedIdsSet.add(currentPostLinkId);
         }
       });
     });
