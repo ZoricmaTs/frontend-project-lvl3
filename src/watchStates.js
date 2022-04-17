@@ -1,8 +1,7 @@
 import onChange from 'on-change';
 
 const renderFeedback = (value, i18n, elements) => {
-  const isValid = value.valid && value.status === 'valid';
-  const isEmpty = value.valid && value.status === 'empty' && value.errorType === null;
+  const isValid = value.valid === 'valid' && value.status === 'valid';
 
   elements.input.classList.toggle('is-invalid', value.status === 'invalid');
 
@@ -11,13 +10,9 @@ const renderFeedback = (value, i18n, elements) => {
     elements.feedback.classList.add('text-success');
     elements.feedback.classList.remove('text-danger');
   } else {
-    elements.feedback.textContent = value.errorType;
+    elements.feedback.textContent = i18n.t(value.errorType);
     elements.feedback.classList.remove('text-success');
     elements.feedback.classList.add('text-danger');
-  }
-
-  if (isEmpty) {
-    elements.feedback.textContent = '';
   }
 };
 
@@ -55,7 +50,7 @@ const renderPost = (post, visitedIds, parentNode, i18n) => {
   aEl.setAttribute('rel', 'noopener noreferrer');
   aEl.textContent = post.title;
 
-  const isVisited = visitedIds.includes(post.id);
+  const isVisited = visitedIds.has(post.id);
 
   if (isVisited) {
     aEl.classList.remove('fw-bold');

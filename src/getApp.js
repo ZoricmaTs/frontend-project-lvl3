@@ -45,7 +45,7 @@ const checkUrlValidity = (value, feeds) => {
 
   const schema = yup.string().required().url().notOneOf(urls);
 
-  return schema.validate(value, { abortEarly: false }).catch((e) => ({ errors: e.errors }));
+  return schema.validate(value, { abortEarly: false }).catch((e) => ({ errors: e.errors[0] }));
 };
 
 export default () => {
@@ -76,7 +76,7 @@ export default () => {
       const state = {
         feeds: [],
         posts: [],
-        visitedIds: [],
+        visitedIds: new Set(),
         modalPostId: null,
         status: 'idle',
         form: {
@@ -86,7 +86,6 @@ export default () => {
         },
       };
 
-      const visitedIdsSet = new Set();
       const watchedStates = watchStates(state, i18n, elements);
 
       const updatePost = (post) => {
@@ -95,9 +94,8 @@ export default () => {
             const { posts } = getParsedData(data.contents);
 
             const oldPosts = state.posts;
-            const newPosts = _.differenceBy(posts, oldPosts, 'title');
 
-            const newPostsWithId = newPosts.map((item) => ({
+            const newPostsWithId = _.differenceBy(posts, oldPosts, 'title').map((item) => ({
               id: _.uniqueId(),
               feedId: post.feedId,
               ...item,
@@ -127,13 +125,13 @@ export default () => {
         checkUrlValidity(url, state.feeds)
           .then((validation) => {
             if (validation.errors) {
-              const errors = validation.errors.map((error) => i18n.t(getErrorMessage(error)));
-
-              watchedStates.form = {
+              const form = {
+                ...watchedStates.form,
                 valid: 'invalid',
-                status: 'empty',
-                errorType: errors,
+                errorType: getErrorMessage(validation.errors),
               };
+
+              watchedStates.form = form;
             } else {
               watchedStates.status = 'loading';
 
@@ -141,7 +139,11 @@ export default () => {
                 .then(({ data }) => {
                   const parsedData = getParsedData(data.contents);
                   const feedId = _.uniqueId();
-                  const feeds = Object.assign(parsedData, { id: _.uniqueId(), url });
+                  const feeds = {
+                    ...parsedData,
+                    id: _.uniqueId(),
+                    url,
+                  };
 
                   watchedStates.feeds.push(feeds);
 
@@ -153,20 +155,19 @@ export default () => {
 
                   watchedStates.posts.push(...postsWithId);
 
-                  const form = {
-                    ...watchedStates.form,
+                  watchedStates.form = {
+                    valid: 'valid',
                     status: 'valid',
                     errorType: null,
                   };
 
-                  watchedStates.form = form;
                   watchedStates.status = 'fulfilled';
                 })
                 .catch((error) => {
                   const form = {
                     ...watchedStates.form,
                     status: 'invalid',
-                    errorType: i18n.t(getErrorMessage(error.message)),
+                    errorType: getErrorMessage(error.message),
                   };
 
                   watchedStates.form = form;
@@ -182,20 +183,12 @@ export default () => {
         const currentPostButtonId = e.target.dataset.buttonId;
         if (currentPostButtonId) {
           watchedStates.modalPostId = currentPostButtonId;
-          if (!visitedIdsSet.has(currentPostButtonId)) {
-            watchedStates.visitedIds.push(currentPostButtonId);
-          }
-
-          visitedIdsSet.add(currentPostButtonId);
+          watchedStates.visitedIds.add(currentPostButtonId);
         }
 
         const currentPostLinkId = e.target.dataset.linkId;
         if (currentPostLinkId) {
-          if (!visitedIdsSet.has(currentPostLinkId)) {
-            watchedStates.visitedIds.push(currentPostLinkId);
-          }
-
-          visitedIdsSet.add(currentPostLinkId);
+          watchedStates.visitedIds.add(currentPostLinkId);
         }
       });
     });
