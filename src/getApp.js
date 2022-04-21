@@ -6,6 +6,7 @@ import resources from './locales/index.js';
 import 'bootstrap';
 import getParsedData from './getParsedData.js';
 import watchStates from './watchStates.js';
+import yupLocales from './locales/yupLocales.js';
 
 const getUrl = (url) => {
   const result = new URL('/get', 'https://allorigins.hexlet.app');
@@ -32,20 +33,11 @@ const getErrorMessage = (error) => {
 };
 
 const checkUrlValidity = (value, feeds) => {
-  yup.setLocale({
-    mixed: {
-      notOneOf: 'duplicate',
-    },
-    string: {
-      url: 'invalid',
-    },
-  });
-
   const urls = feeds.map((item) => item.url);
 
   const schema = yup.string().required().url().notOneOf(urls);
 
-  return schema.validate(value, { abortEarly: false }).catch((e) => ({ errors: e.errors[0] }));
+  return schema.validate(value, { abortEarly: false }).catch((e) => ({ errors: e.message }));
 };
 
 export default () => {
@@ -58,6 +50,8 @@ export default () => {
     resources,
   })
     .then(() => {
+      yup.setLocale(yupLocales);
+
       const elements = {
         form: document.querySelector('.rss-form'),
         input: document.getElementById('url-input'),
@@ -78,9 +72,12 @@ export default () => {
         posts: [],
         visitedIds: new Set(),
         modalPostId: null,
-        status: 'idle',
+        loadingProcess: {
+          status: 'idle',
+          error: null,
+        },
         form: {
-          valid: 'empty',
+          valid: false,
           status: 'empty',
           errorType: null,
         },
@@ -104,12 +101,7 @@ export default () => {
             watchedStates.posts.push(...newPostsWithId);
           })
           .catch((error) => {
-            const form = {
-              ...watchedStates.form,
-              errorType: error.message,
-            };
-
-            watchedStates.form = form;
+            console.log(error);
           })
           .finally(() => setTimeout(() => updatePost(post), 5000));
       };
@@ -127,13 +119,17 @@ export default () => {
             if (validation.errors) {
               const form = {
                 ...watchedStates.form,
-                valid: 'invalid',
+                valid: false,
                 errorType: getErrorMessage(validation.errors),
               };
 
               watchedStates.form = form;
             } else {
-              watchedStates.status = 'loading';
+              let loadingProcess = {
+                ...watchedStates.loadingProcess,
+                status: 'loading',
+              };
+              watchedStates.loadingProcess = loadingProcess;
 
               axios.get(getUrl(url))
                 .then(({ data }) => {
@@ -156,22 +152,31 @@ export default () => {
                   watchedStates.posts.push(...postsWithId);
 
                   watchedStates.form = {
-                    valid: 'valid',
+                    valid: true,
                     status: 'valid',
                     errorType: null,
                   };
 
-                  watchedStates.status = 'fulfilled';
+                  loadingProcess = {
+                    ...watchedStates.loadingProcess,
+                    status: 'fulfilled',
+                  };
+                  watchedStates.loadingProcess = loadingProcess;
                 })
                 .catch((error) => {
-                  const form = {
-                    ...watchedStates.form,
-                    status: 'invalid',
-                    errorType: getErrorMessage(error.message),
-                  };
+                  if (error.message === 'invalidRss') {
+                    const form = {
+                      ...watchedStates.form,
+                      valid: false,
+                      errorType: getErrorMessage(error.message),
+                    };
+                    watchedStates.form = form;
+                  }
 
-                  watchedStates.form = form;
-                  watchedStates.status = 'rejected';
+                  watchedStates.loadingProcess = {
+                    status: 'rejected',
+                    error: getErrorMessage(error.message),
+                  };
                 });
             }
           });

@@ -1,7 +1,7 @@
 import onChange from 'on-change';
 
 const renderFeedback = (value, i18n, elements) => {
-  const isValid = value.valid === 'valid' && value.status === 'valid';
+  const isValid = value.valid && (value.status === 'valid');
 
   elements.input.classList.toggle('is-invalid', value.status === 'invalid');
 
@@ -84,14 +84,28 @@ const renderModal = (state, i18n, modalElements) => {
   modalElements.closeButton.textContent = i18n.t('modal.close');
 };
 
-const renderInputStatus = (status, elements) => {
-  if (status === 'loading') {
-    elements.input.setAttribute('readonly', true);
-    elements.submitButton.setAttribute('disabled', 'disabled');
-  } else {
-    elements.input.value = '';
-    elements.input.removeAttribute('readonly');
-    elements.submitButton.removeAttribute('disabled');
+const renderInputStatus = (loadingProcess, i18n, elements) => {
+  switch (loadingProcess.status) {
+    case 'fulfilled':
+      elements.input.value = '';
+      elements.input.removeAttribute('readonly');
+      elements.submitButton.removeAttribute('disabled');
+      break;
+
+    case 'rejected':
+      elements.input.value = '';
+      elements.input.removeAttribute('readonly');
+      elements.submitButton.removeAttribute('disabled');
+
+      elements.feedback.textContent = i18n.t(loadingProcess.error);
+      elements.feedback.classList.remove('text-success');
+      elements.feedback.classList.add('text-danger');
+      break;
+
+    default:
+      elements.input.setAttribute('readonly', true);
+      elements.submitButton.setAttribute('disabled', 'disabled');
+      break;
   }
 };
 
@@ -115,8 +129,8 @@ export default (state, i18n, elements) => {
         renderModal(state, i18n, elements.modal);
         break;
 
-      case 'status':
-        renderInputStatus(value, elements);
+      case 'loadingProcess':
+        renderInputStatus(value, i18n, elements);
         break;
 
       default:
