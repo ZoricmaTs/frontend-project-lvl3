@@ -78,7 +78,7 @@ export default () => {
         },
         form: {
           valid: false,
-          status: 'empty',
+          status: 'filling',
           errorType: null,
         },
       };
@@ -152,7 +152,7 @@ export default () => {
 
                   watchedStates.form = {
                     valid: true,
-                    status: 'valid',
+                    status: 'sending',
                     errorType: null,
                   };
 
@@ -164,7 +164,7 @@ export default () => {
                 .catch((error) => {
                   if (error.message === 'invalidRss') {
                     const form = {
-                      ...watchedStates.form,
+                      status: 'rejected',
                       valid: false,
                       errorType: getErrorMessage(error.message),
                     };

@@ -1,9 +1,9 @@
 import onChange from 'on-change';
 
 const renderFeedback = (value, i18n, elements) => {
-  const isValid = value.valid && (value.status === 'valid');
+  const isValid = value.valid;
 
-  elements.input.classList.toggle('is-invalid', value.status === 'invalid');
+  elements.input.classList.toggle('is-invalid', value.valid === 'invalid');
 
   if (isValid) {
     elements.feedback.textContent = i18n.t('errors.success');
