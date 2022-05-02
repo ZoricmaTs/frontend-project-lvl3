@@ -19,16 +19,16 @@ const getUrl = (url) => {
 const getErrorMessage = (error) => {
   switch (error) {
     case 'invalidRss':
-      return 'validation.invalidRss';
+      return 'errors.invalidRss';
 
     case 'duplicate':
-      return 'validation.duplicate';
+      return 'errors.duplicate';
 
     case 'invalid':
-      return 'validation.invalid';
+      return 'errors.invalid';
 
     default:
-      return 'validation.network';
+      return 'errors.network';
   }
 };
 
@@ -37,7 +37,7 @@ const checkUrlValidity = (value, feeds) => {
 
   const schema = yup.string().required().url().notOneOf(urls);
 
-  return schema.validate(value, { abortEarly: false }).catch((e) => ({ errors: e.message }));
+  return schema.validate(value, { abortEarly: false }).catch((e) => ({ error: e.message }));
 };
 
 export default () => {
@@ -116,20 +116,19 @@ export default () => {
 
         checkUrlValidity(url, state.feeds)
           .then((validation) => {
-            if (validation.errors) {
+            if (validation.error) {
               const form = {
                 ...watchedStates.form,
                 valid: false,
-                errorType: getErrorMessage(validation.errors),
+                errorType: getErrorMessage(validation.error),
               };
 
               watchedStates.form = form;
             } else {
-              let loadingProcess = {
-                ...watchedStates.loadingProcess,
+              watchedStates.loadingProcess = {
                 status: 'loading',
+                error: null,
               };
-              watchedStates.loadingProcess = loadingProcess;
 
               axios.get(getUrl(url))
                 .then(({ data }) => {
@@ -157,11 +156,10 @@ export default () => {
                     errorType: null,
                   };
 
-                  loadingProcess = {
-                    ...watchedStates.loadingProcess,
+                  watchedStates.loadingProcess = {
                     status: 'fulfilled',
+                    error: null,
                   };
-                  watchedStates.loadingProcess = loadingProcess;
                 })
                 .catch((error) => {
                   if (error.message === 'invalidRss') {

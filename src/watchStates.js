@@ -6,7 +6,7 @@ const renderFeedback = (value, i18n, elements) => {
   elements.input.classList.toggle('is-invalid', value.status === 'invalid');
 
   if (isValid) {
-    elements.feedback.textContent = i18n.t('validation.success');
+    elements.feedback.textContent = i18n.t('errors.success');
     elements.feedback.classList.add('text-success');
     elements.feedback.classList.remove('text-danger');
   } else {
