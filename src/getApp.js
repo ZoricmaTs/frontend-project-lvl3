@@ -34,6 +34,51 @@ const checkUrlValidity = (value, feeds) => {
   return schema.validate(value, { abortEarly: false }).catch((e) => ({ error: e.message }));
 };
 
+const loadRss = (watchedStates, url) => {
+  watchedStates.loadingProcess = {
+    status: 'loading',
+    error: null,
+  };
+
+  axios.get(getUrl(url))
+    .then(({ data }) => {
+      const parsedData = getParsedData(data.contents);
+      const feedId = _.uniqueId();
+      const feeds = {
+        ...parsedData,
+        id: _.uniqueId(),
+        url,
+      };
+
+      watchedStates.feeds.push(feeds);
+
+      const postsWithId = parsedData.posts.map((post) => ({
+        id: _.uniqueId(),
+        feedId,
+        ...post,
+      }));
+
+      watchedStates.posts.push(...postsWithId);
+
+      watchedStates.form = {
+        valid: true,
+        status: 'sending',
+        errorType: null,
+      };
+
+      watchedStates.loadingProcess = {
+        ...watchedStates.loadingProcess,
+        status: 'fulfilled',
+      };
+    })
+    .catch((error) => {
+      watchedStates.loadingProcess = {
+        status: 'rejected',
+        error: getErrorMessage(error.message),
+      };
+    });
+};
+
 export default () => {
   const defaultLang = 'ru';
   const i18n = i18next.createInstance();
@@ -119,48 +164,7 @@ export default () => {
 
               watchedStates.form = form;
             } else {
-              watchedStates.loadingProcess = {
-                status: 'loading',
-                error: null,
-              };
-
-              axios.get(getUrl(url))
-                .then(({ data }) => {
-                  const parsedData = getParsedData(data.contents);
-                  const feedId = _.uniqueId();
-                  const feeds = {
-                    ...parsedData,
-                    id: _.uniqueId(),
-                    url,
-                  };
-
-                  watchedStates.feeds.push(feeds);
-
-                  const postsWithId = parsedData.posts.map((post) => ({
-                    id: _.uniqueId(),
-                    feedId,
-                    ...post,
-                  }));
-
-                  watchedStates.posts.push(...postsWithId);
-
-                  watchedStates.form = {
-                    valid: true,
-                    status: 'sending',
-                    errorType: null,
-                  };
-
-                  watchedStates.loadingProcess = {
-                    status: 'fulfilled',
-                    error: null,
-                  };
-                })
-                .catch((error) => {
-                  watchedStates.loadingProcess = {
-                    status: 'rejected',
-                    error: getErrorMessage(error.message),
-                  };
-                });
+              loadRss(watchedStates, url);
             }
           });
 
