@@ -21,12 +21,6 @@ const getErrorMessage = (error) => {
     case 'invalidRss':
       return 'errors.invalidRss';
 
-    case 'duplicate':
-      return 'errors.duplicate';
-
-    case 'invalid':
-      return 'errors.invalid';
-
     default:
       return 'errors.network';
   }
@@ -120,7 +114,7 @@ export default () => {
               const form = {
                 ...watchedStates.form,
                 valid: false,
-                errorType: getErrorMessage(validation.error),
+                errorType: validation.error,
               };
 
               watchedStates.form = form;
@@ -162,15 +156,6 @@ export default () => {
                   };
                 })
                 .catch((error) => {
-                  if (error.message === 'invalidRss') {
-                    const form = {
-                      status: 'rejected',
-                      valid: false,
-                      errorType: getErrorMessage(error.message),
-                    };
-                    watchedStates.form = form;
-                  }
-
                   watchedStates.loadingProcess = {
                     status: 'rejected',
                     error: getErrorMessage(error.message),

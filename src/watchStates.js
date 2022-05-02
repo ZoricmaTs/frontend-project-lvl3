@@ -6,11 +6,11 @@ const renderFeedback = (value, i18n, elements) => {
   elements.input.classList.toggle('is-invalid', value.valid === 'invalid');
 
   if (isValid) {
-    elements.feedback.textContent = i18n.t('errors.success');
+    elements.feedback.textContent = i18n.t('successMessage');
     elements.feedback.classList.add('text-success');
     elements.feedback.classList.remove('text-danger');
   } else {
-    elements.feedback.textContent = i18n.t(value.errorType);
+    elements.feedback.textContent = i18n.t(`errors.${value.errorType}`);
     elements.feedback.classList.remove('text-success');
     elements.feedback.classList.add('text-danger');
   }

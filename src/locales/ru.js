@@ -3,8 +3,8 @@ export default {
     languages: {
       ru: 'Русский',
     },
+    successMessage: 'RSS успешно загружен',
     errors: {
-      success: 'RSS успешно загружен',
       empty: 'Поле ввода не должно быть пустым',
       duplicate: 'RSS уже существует',
       invalid: 'Ссылка должна быть валидным URL',
