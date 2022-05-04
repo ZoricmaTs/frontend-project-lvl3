@@ -10,7 +10,7 @@ const renderFeedback = (value, i18n, elements) => {
     elements.feedback.classList.add('text-success');
     elements.feedback.classList.remove('text-danger');
   } else {
-    elements.feedback.textContent = i18n.t(`errors.${value.errorType}`);
+    elements.feedback.textContent = i18n.t(`errors.${value.error}`);
     elements.feedback.classList.remove('text-success');
     elements.feedback.classList.add('text-danger');
   }
@@ -87,6 +87,7 @@ const renderModal = (state, i18n, modalElements) => {
 const renderInputStatus = (loadingProcess, i18n, elements) => {
   switch (loadingProcess.status) {
     case 'fulfilled':
+    case 'idle':
       elements.input.value = '';
       elements.input.removeAttribute('readonly');
       elements.submitButton.removeAttribute('disabled');

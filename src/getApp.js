@@ -8,6 +8,8 @@ import getParsedData from './getParsedData.js';
 import watchStates from './watchStates.js';
 import yupLocales from './locales/yupLocales.js';
 
+const updateTimeout = 5000;
+
 const getUrl = (url) => {
   const result = new URL('/get', 'https://allorigins.hexlet.app');
   result.searchParams.set('url', url);
@@ -24,6 +26,27 @@ const getErrorMessage = (error) => {
     default:
       return 'errors.network';
   }
+};
+
+const updatePost = (post, watchedStatesPosts, state) => {
+  axios.get(getUrl(post.url))
+    .then(({ data }) => {
+      const { posts } = getParsedData(data.contents);
+
+      const oldPosts = state.posts;
+
+      const newPostsWithId = _.differenceBy(posts, oldPosts, 'title').map((item) => ({
+        id: _.uniqueId(),
+        feedId: post.feedId,
+        ...item,
+      }));
+
+      watchedStatesPosts.push(...newPostsWithId);
+    })
+    .catch((error) => {
+      console.log(error);
+    })
+    .finally(() => setTimeout(() => updatePost(post, watchedStatesPosts, state), updateTimeout));
 };
 
 const checkUrlValidity = (value, feeds) => {
@@ -61,9 +84,9 @@ const loadRss = (watchedStates, url) => {
       watchedStates.posts.push(...postsWithId);
 
       watchedStates.form = {
+        ...watchedStates.form,
         valid: true,
-        status: 'sending',
-        errorType: null,
+        error: null,
       };
 
       watchedStates.loadingProcess = {
@@ -118,34 +141,15 @@ export default () => {
         form: {
           valid: false,
           status: 'filling',
-          errorType: null,
+          error: null,
         },
       };
 
       const watchedStates = watchStates(state, i18n, elements);
 
-      const updatePost = (post) => {
-        axios.get(getUrl(post.url))
-          .then(({ data }) => {
-            const { posts } = getParsedData(data.contents);
-
-            const oldPosts = state.posts;
-
-            const newPostsWithId = _.differenceBy(posts, oldPosts, 'title').map((item) => ({
-              id: _.uniqueId(),
-              feedId: post.feedId,
-              ...item,
-            }));
-
-            watchedStates.posts.push(...newPostsWithId);
-          })
-          .catch((error) => {
-            console.log(error);
-          })
-          .finally(() => setTimeout(() => updatePost(post), 5000));
-      };
-
-      setTimeout(() => state.feeds.forEach((item) => updatePost(item)), 5000);
+      setTimeout(() => state.feeds.forEach((item) => {
+        updatePost(item, watchedStates.posts, state);
+      }), updateTimeout);
 
       elements.form.addEventListener('submit', (e) => {
         e.preventDefault();
@@ -159,7 +163,7 @@ export default () => {
               const form = {
                 ...watchedStates.form,
                 valid: false,
-                errorType: validation.error,
+                error: validation.error,
               };
 
               watchedStates.form = form;
