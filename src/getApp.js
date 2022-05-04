@@ -59,8 +59,8 @@ const checkUrlValidity = (value, feeds) => {
 
 const loadRss = (watchedStates, url) => {
   watchedStates.loadingProcess = {
+    ...watchedStates.loadingProcess,
     status: 'loading',
-    error: null,
   };
 
   axios.get(getUrl(url))
@@ -85,7 +85,6 @@ const loadRss = (watchedStates, url) => {
 
       watchedStates.form = {
         ...watchedStates.form,
-        valid: true,
         error: null,
       };
 
@@ -139,7 +138,7 @@ export default () => {
           error: null,
         },
         form: {
-          valid: false,
+          valid: true,
           status: 'filling',
           error: null,
         },
@@ -147,9 +146,9 @@ export default () => {
 
       const watchedStates = watchStates(state, i18n, elements);
 
-      setTimeout(() => state.feeds.forEach((item) => {
+      setTimeout(() => Promise.all(state.feeds.map((item) => {
         updatePost(item, watchedStates.posts, state);
-      }), updateTimeout);
+      }), updateTimeout));
 
       elements.form.addEventListener('submit', (e) => {
         e.preventDefault();
