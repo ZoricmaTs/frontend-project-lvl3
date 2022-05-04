@@ -146,9 +146,9 @@ export default () => {
 
       const watchedStates = watchStates(state, i18n, elements);
 
-      setTimeout(() => Promise.all(state.feeds.map((item) => {
-        updatePost(item, watchedStates.posts, state);
-      }), updateTimeout));
+      setTimeout(() => Promise.all(state.feeds.map((item) => (
+        updatePost(item, watchedStates.posts, state)
+      )), updateTimeout));
 
       elements.form.addEventListener('submit', (e) => {
         e.preventDefault();
