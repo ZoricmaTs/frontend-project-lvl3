@@ -153,7 +153,7 @@ export default () => {
         const formData = new FormData(e.target);
         const url = formData.get('url');
 
-        checkUrlValidity(url, state.feeds)
+        checkUrlValidity(url, watchedStates.feeds)
           .then((validation) => {
             if (validation.error) {
               const form = {
