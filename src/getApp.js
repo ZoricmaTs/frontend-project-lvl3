@@ -28,25 +28,26 @@ const getErrorMessage = (error) => {
   }
 };
 
-const updatePost = (post, watchedStatesPosts, state) => {
-  axios.get(getUrl(post.url))
+const updateFeeds = (watchedStates) => {
+  const promises = watchedStates.feeds.map((feed) => axios.get(getUrl(feed.url))
     .then(({ data }) => {
       const { posts } = getParsedData(data.contents);
 
-      const oldPosts = state.posts;
+      const oldPosts = watchedStates.posts;
 
       const newPostsWithId = _.differenceBy(posts, oldPosts, 'title').map((item) => ({
         id: _.uniqueId(),
-        feedId: post.feedId,
+        feedId: item.feedId,
         ...item,
       }));
 
-      watchedStatesPosts.push(...newPostsWithId);
+      watchedStates.posts.push(...newPostsWithId);
     })
     .catch((error) => {
       console.log(error);
-    })
-    .finally(() => setTimeout(() => updatePost(post, watchedStatesPosts, state), updateTimeout));
+    }));
+
+  Promise.all(promises).finally(() => setTimeout(() => updateFeeds(watchedStates), updateTimeout));
 };
 
 const checkUrlValidity = (value, feeds) => {
@@ -146,10 +147,6 @@ export default () => {
 
       const watchedStates = watchStates(state, i18n, elements);
 
-      setTimeout(() => Promise.all(state.feeds.map((item) => (
-        updatePost(item, watchedStates.posts, state)
-      )), updateTimeout));
-
       elements.form.addEventListener('submit', (e) => {
         e.preventDefault();
 
@@ -186,5 +183,7 @@ export default () => {
           watchedStates.visitedIds.add(currentPostLinkId);
         }
       });
+
+      setTimeout(() => updateFeeds(watchedStates), updateTimeout);
     });
 };
