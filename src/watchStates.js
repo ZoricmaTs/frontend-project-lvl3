@@ -103,9 +103,12 @@ const renderInputStatus = (loadingProcess, i18n, elements) => {
       elements.feedback.classList.add('text-danger');
       break;
 
-    default:
+    case 'loading':
       elements.input.setAttribute('readonly', true);
       elements.submitButton.setAttribute('disabled', 'disabled');
+      break;
+
+    default:
       break;
   }
 };
@@ -131,7 +134,8 @@ export default (state, i18n, elements) => {
         break;
 
       case 'loadingProcess':
-        renderInputStatus(value, i18n, elements);
+      case 'loadingProcess.status':
+        renderInputStatus(state.loadingProcess, i18n, elements);
         break;
 
       default:

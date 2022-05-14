@@ -89,10 +89,7 @@ const loadRss = (watchedStates, url) => {
         error: null,
       };
 
-      watchedStates.loadingProcess = {
-        ...watchedStates.loadingProcess,
-        status: 'fulfilled',
-      };
+      watchedStates.loadingProcess.status = 'fulfilled';
     })
     .catch((error) => {
       watchedStates.loadingProcess = {
