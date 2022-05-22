@@ -59,10 +59,7 @@ const checkUrlValidity = (value, feeds) => {
 };
 
 const loadRss = (watchedStates, url) => {
-  watchedStates.loadingProcess = {
-    ...watchedStates.loadingProcess,
-    status: 'loading',
-  };
+  watchedStates.loadingProcess.status = 'loading';
 
   axios.get(getUrl(url))
     .then(({ data }) => {
@@ -85,7 +82,8 @@ const loadRss = (watchedStates, url) => {
       watchedStates.posts.push(...postsWithId);
 
       watchedStates.form = {
-        ...watchedStates.form,
+        valid: true,
+        status: 'filling',
         error: null,
       };
 
@@ -103,6 +101,21 @@ export default () => {
   const defaultLang = 'ru';
   const i18n = i18next.createInstance();
 
+  const elements = {
+    form: document.querySelector('.rss-form'),
+    input: document.getElementById('url-input'),
+    feedback: document.querySelector('.feedback'),
+    submitButton: document.querySelector('[type="submit"]'),
+    feedsContainer: document.querySelector('.feeds'),
+    postsContainer: document.querySelector('.posts'),
+    modal: {
+      title: document.querySelector('.modal-title'),
+      body: document.querySelector('.modal-body'),
+      link: document.querySelector('.modal-footer > .btn-primary'),
+      closeButton: document.querySelector('.modal-footer > .btn-secondary'),
+    },
+  };
+
   i18n.init({
     lng: defaultLang,
     debug: false,
@@ -110,21 +123,6 @@ export default () => {
   })
     .then(() => {
       yup.setLocale(yupLocales);
-
-      const elements = {
-        form: document.querySelector('.rss-form'),
-        input: document.getElementById('url-input'),
-        feedback: document.querySelector('.feedback'),
-        submitButton: document.querySelector('[type="submit"]'),
-        feedsContainer: document.querySelector('.feeds'),
-        postsContainer: document.querySelector('.posts'),
-        modal: {
-          title: document.querySelector('.modal-title'),
-          body: document.querySelector('.modal-body'),
-          link: document.querySelector('.modal-footer > .btn-primary'),
-          closeButton: document.querySelector('.modal-footer > .btn-secondary'),
-        },
-      };
 
       const state = {
         feeds: [],
@@ -153,13 +151,11 @@ export default () => {
         checkUrlValidity(url, watchedStates.feeds)
           .then((validation) => {
             if (validation.error) {
-              const form = {
+              watchedStates.form = {
                 ...watchedStates.form,
                 valid: false,
                 error: validation.error,
               };
-
-              watchedStates.form = form;
             } else {
               loadRss(watchedStates, url);
             }
