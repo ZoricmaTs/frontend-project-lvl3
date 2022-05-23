@@ -41,7 +41,7 @@ const updateFeeds = (watchedStates) => {
         ...item,
       }));
 
-      watchedStates.posts.push(...newPostsWithId);
+      watchedStates.posts.unshift(...newPostsWithId);
     })
     .catch((error) => {
       console.log(error);
@@ -67,7 +67,7 @@ const loadRss = (watchedStates, url) => {
       const feedId = _.uniqueId();
       const feeds = {
         ...parsedData,
-        id: _.uniqueId(),
+        id: feedId,
         url,
       };
 
@@ -79,7 +79,7 @@ const loadRss = (watchedStates, url) => {
         ...post,
       }));
 
-      watchedStates.posts.push(...postsWithId);
+      watchedStates.posts.unshift(...postsWithId);
 
       watchedStates.form = {
         valid: true,
