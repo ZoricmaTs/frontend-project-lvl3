@@ -108,12 +108,7 @@ export default () => {
     submitButton: document.querySelector('[type="submit"]'),
     feedsContainer: document.querySelector('.feeds'),
     postsContainer: document.querySelector('.posts'),
-    modal: {
-      title: document.querySelector('.modal-title'),
-      body: document.querySelector('.modal-body'),
-      link: document.querySelector('.modal-footer > .btn-primary'),
-      closeButton: document.querySelector('.modal-footer > .btn-secondary'),
-    },
+    modal: document.getElementById('modal'),
   };
 
   i18n.init({

@@ -74,14 +74,20 @@ const renderPosts = (state, i18n, postsContainer) => {
   state.posts.forEach((post) => renderPost(post, state.visitedIds, postsList, i18n));
 };
 
-const renderModal = (state, i18n, modalElements) => {
+const renderModal = (state, i18n, modalContainer) => {
   const post = state.posts.find((item) => item.id === state.modalPostId);
+  const titleContainer = modalContainer.querySelector('.modal-title');
+  titleContainer.textContent = post.title;
 
-  modalElements.title.textContent = post.title;
-  modalElements.body.textContent = post.description;
-  modalElements.link.setAttribute('href', post.link);
-  modalElements.link.textContent = i18n.t('modal.link');
-  modalElements.closeButton.textContent = i18n.t('modal.close');
+  const bodyContainer = modalContainer.querySelector('.modal-body');
+  bodyContainer.textContent = post.description;
+
+  const linkContainer = modalContainer.querySelector('.modal-footer > .btn-primary');
+  linkContainer.setAttribute('href', post.link);
+  linkContainer.textContent = i18n.t('modal.link');
+
+  const buttonContainer = modalContainer.querySelector('.btn-secondary');
+  buttonContainer.textContent = i18n.t('modal.close');
 };
 
 const renderInputStatus = (loadingProcess, i18n, elements) => {
